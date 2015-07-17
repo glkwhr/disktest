@@ -22,8 +22,8 @@ public:
 private:
     QString *qstring_textEdit1;
     QPushButton *button;
-    QTextEdit *textEdit1;
-    PaintedWidget *paintwidget;
+    //QTextEdit *textEdit1;
+    //PaintedWidget *paintwidget;
 
     iozoneParamWidget * paramWidget;
 };
