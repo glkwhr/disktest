@@ -30,9 +30,12 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     //paintwidget = new PaintedWidget(this);
 
-
+    parambutton = new QPushButton(this);
+    parambutton->setText("<<< Details setting");
+    connect(parambutton, &QPushButton::clicked, this, &postmarkWidget::parambuttonclicked);
 
     paramWidget = new postmarkParamWidget(this);
+    paramWidget->setVisible(false);
 
     testramfs = new QCheckBox("ramfs", this);
     testramfs->setChecked(true);
@@ -48,17 +51,20 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     pgslabel->setText("");
 
     QGridLayout * gridlayout = new QGridLayout;
-    gridlayout->addWidget(button, 0, 1);
-    gridlayout->addWidget(table, 1, 0);
+    gridlayout->addWidget(button, 1, 1);
+    gridlayout->addWidget(table, 3, 1, 1, 2);
     //gridlayout->addWidget(paintwidget, 1, 1);
-    gridlayout->addWidget(paramWidget, 0, 0);
 
-    gridlayout->addWidget(testramfs, 2, 0);
-    gridlayout->addWidget(testobfs, 3, 0);
-    gridlayout->addWidget(testpmfs, 4, 0);
 
-    gridlayout->addWidget(pgslabel, 5, 0);
-    gridlayout->addWidget(pgsbar, 5, 1);
+    gridlayout->addWidget(parambutton, 0, 1);
+    gridlayout->addWidget(paramWidget, 0, 0, 5, 1);
+
+    gridlayout->addWidget(testramfs, 0, 2);
+    gridlayout->addWidget(testobfs, 1, 2);
+    gridlayout->addWidget(testpmfs, 2, 2);
+
+    gridlayout->addWidget(pgslabel, 4, 1);
+    gridlayout->addWidget(pgsbar, 4, 2);
 
     this->setLayout(gridlayout);
 }
@@ -74,6 +80,14 @@ void postmarkWidget::buttonclicked()
 
     //开始postmark测试线程
     postmarkthread->start();
+}
+void postmarkWidget::parambuttonclicked()
+{
+    paramWidget->setVisible(!paramWidget->isVisible());
+    if (paramWidget->isVisible())
+        parambutton->setText(">>> Details setting");
+    else
+        parambutton->setText("<<< Details setting");
 }
 
 

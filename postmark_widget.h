@@ -22,6 +22,7 @@ class postmarkWidget : public QWidget
     Q_OBJECT
 public:
     void buttonclicked();
+    void parambuttonclicked();
 
     void myEventHandle(QEvent * e);
 
@@ -42,7 +43,7 @@ private:
     //PaintedWidget *paintwidget;
 
 
-
+    QPushButton *parambutton;
     postmarkParamWidget * paramWidget;
 
     QLabel *pgslabel;
