@@ -1,7 +1,7 @@
 #include "postmark_thread.h"
 
 extern "C" {
-    int postmark_main(int argc, char *argv[32]);
+    int postmark_main(int nowfs, int argc, char *argv[32]);
 
 }
 
@@ -59,7 +59,24 @@ void postmarkThread::run()
     delete param;
 
     //开始postmark的测试
-    postmark_main(argc, argv);
+    label->setText("mount fs");
+
+    label->setText("ok");
+    postmark_main(0, argc, argv);
+
+    //second file system
+    label->setText("mount fs");
+
+    label->setText("ok");
+    sprintf(argv[++i], "set location %s", "/home/yalewoo");
+    postmark_main(1, argc, argv);
+
+    //third file system
+    label->setText("mount fs");
+
+    label->setText("ok");
+    sprintf(argv[++i], "set location %s", "/home/yalewoo" );
+    postmark_main(2, argc, argv);
 
 
     for (int i = 0; i < 32; ++i)

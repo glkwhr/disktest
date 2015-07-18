@@ -12,7 +12,7 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-
+#include <QStringList>
 
 postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 {
@@ -20,12 +20,26 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     button->setText(tr("Begin postmark Test"));
     connect(button, &QPushButton::clicked, this, &postmarkWidget::buttonclicked);
 
-    textEdit1 = new QTextEdit(this);
-    paintwidget = new PaintedWidget(this);
+    table = new QTableWidget(4, 6, this);
 
-    qstring_textEdit1 = new QString();
+    QStringList header;
+    header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
+    table->setHorizontalHeaderLabels(header);
+
+
+
+    //paintwidget = new PaintedWidget(this);
+
+
 
     paramWidget = new postmarkParamWidget(this);
+
+    testramfs = new QCheckBox("ramfs", this);
+    testramfs->setChecked(true);
+    testobfs = new QCheckBox("obfs", this);
+    testobfs->setChecked(true);
+    testpmfs = new QCheckBox("pmfs", this);
+    testpmfs->setChecked(true);
 
 
     pgsbar = new QProgressBar(this);
@@ -34,13 +48,17 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     pgslabel->setText("");
 
     QGridLayout * gridlayout = new QGridLayout;
-    gridlayout->addWidget(button, 1, 0);
-    gridlayout->addWidget(textEdit1, 0, 1);
-    gridlayout->addWidget(paintwidget, 1, 1);
+    gridlayout->addWidget(button, 0, 1);
+    gridlayout->addWidget(table, 1, 0);
+    //gridlayout->addWidget(paintwidget, 1, 1);
     gridlayout->addWidget(paramWidget, 0, 0);
 
-    gridlayout->addWidget(pgslabel, 2, 0);
-    gridlayout->addWidget(pgsbar, 2, 1);
+    gridlayout->addWidget(testramfs, 2, 0);
+    gridlayout->addWidget(testobfs, 3, 0);
+    gridlayout->addWidget(testpmfs, 4, 0);
+
+    gridlayout->addWidget(pgslabel, 5, 0);
+    gridlayout->addWidget(pgsbar, 5, 1);
 
     this->setLayout(gridlayout);
 }
@@ -49,7 +67,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 void postmarkWidget::buttonclicked()
 {
     struct postmark_param_struct * p = paramWidget->getParamData();
-    postmarkThread * postmarkthread = new postmarkThread(p);
+    postmarkThread * postmarkthread = new postmarkThread(p, this->pgslabel);
 
     //显示进度条
     pgsbar->setVisible(true);
@@ -79,6 +97,36 @@ char *scalef(float i, char *buffer)
 }
 
 
+
+int eventidTotableindex(int num)
+{
+    //2  5 6 7 10 11
+    switch (num)
+    {
+    case 2:
+        return 0;
+        break;
+    case 5:
+        return 1;
+        break;
+    case 6:
+        return 2;
+        break;
+    case 7:
+        return 3;
+        break;
+    case 10:
+        return 4;
+        break;
+    case 11:
+        return 5;
+        break;
+    default:
+        return -1;
+
+    }
+}
+
 void postmarkWidget::myEventHandle(QEvent *e)
 {
     static char test_type_table[32][32] = {
@@ -106,8 +154,11 @@ void postmarkWidget::myEventHandle(QEvent *e)
             pgsbar->setValue(pe->type);
             break;
         case 4:
-            pgslabel->setText("");
-            pgsbar->setVisible(false);
+            if (pe->nowfs == 2)
+            {
+                pgslabel->setText("");
+                pgsbar->setVisible(false);
+            }
             break;
 
         }
@@ -115,28 +166,20 @@ void postmarkWidget::myEventHandle(QEvent *e)
     else
     {   //数据
         //data message
-
-
-
-
-        QString tmp;
-
-        if (((postmarkEvent *)e)->type != 10 && ((postmarkEvent *)e)->type != 11)
+        if (eventidTotableindex(pe->type) != -1)
         {
-            tmp.sprintf("%s--> %d  ( %d per second)\n",test_type_table[((postmarkEvent *)e)->type],
-                        ((postmarkEvent *)e)->total, ((postmarkEvent *)e)->persecond );
-        }
-        else
-        {
-            char buff1[32];
-            char buff2[32];
-            tmp.sprintf("%s--> %s ( %s per second)\n",test_type_table[((postmarkEvent *)e)->type],
-                        scalef( ((postmarkEvent *)e)->totalf, buff1) , scalef( ((postmarkEvent *)e)->persecondf, buff2 ) );
+            if (((postmarkEvent *)e)->type != 10 && ((postmarkEvent *)e)->type != 11)
+            {
+                table->setItem(pe->nowfs, eventidTotableindex(pe->type), new QTableWidgetItem(QString::number(pe->persecond)));
+            }
+            else
+            {
+                char buff[64];
+                table->setItem(pe->nowfs, eventidTotableindex(pe->type), new QTableWidgetItem(scalef(pe->persecondf, buff)));
+            }
         }
 
 
-        qstring_textEdit1->append(tmp);
-        textEdit1->setText(*qstring_textEdit1);
 
     }
 

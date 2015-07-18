@@ -23,14 +23,14 @@ extern "C" {
         QCoreApplication::postEvent(g_w, iozevent);
     }
 
-    void notifyGUI_2_int(int isprogress, int type, int total, int persecond)
+    void notifyGUI_2_int(int nowfs, int isprogress, int type, int total, int persecond)
     {
-        postmarkEvent *postmarkevent = new postmarkEvent(isprogress, type, total, persecond);
+        postmarkEvent *postmarkevent = new postmarkEvent(nowfs, isprogress, type, total, persecond);
         QCoreApplication::postEvent(g_w, postmarkevent);
     }
-    void notifyGUI_2_float(int isprogress, int type, float total, float persecond)
+    void notifyGUI_2_float(int nowfs, int isprogress, int type, float total, float persecond)
     {
-        postmarkEvent *postmarkevent = new postmarkEvent(isprogress, type, total, persecond);
+        postmarkEvent *postmarkevent = new postmarkEvent(nowfs, isprogress, type, total, persecond);
         QCoreApplication::postEvent(g_w, postmarkevent);
     }
 }

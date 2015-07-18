@@ -91,6 +91,9 @@ typedef struct { /* ADT for table of CLI commands */
    char *help;    /* descriptive help string */
 } cmd;
 
+
+static int global_now;
+
 extern int cli_set_size();
 extern int cli_set_number();
 extern int cli_set_seed();
@@ -522,8 +525,8 @@ time_t t0;
 
 
 
-extern void notifyGUI_2_int(int isprogress, int type, int total, int persecond);
-extern void notifyGUI_2_float(int isprogress, int type, float total, float persecond);
+extern void notifyGUI_2_int(int nowfs, int isprogress, int type, int total, int persecond);
+extern void notifyGUI_2_float(int nowfs, int isprogress, int type, float total, float persecond);
 
 
 /* prints out results from running transactions */
@@ -537,53 +540,53 @@ void verbose_report(FILE *fp, time_t end_time, time_t start_time, time_t t_end_t
 
       fprintf(fp,"Time:\n");
       fprintf(fp,"\t%d seconds total\n",elapsed);
-      notifyGUI_2_int(0, 0, elapsed, 0);
+      notifyGUI_2_int(global_now, 0, 0, elapsed, 0);
 
       fprintf(fp,"\t%d seconds of transactions (%d per second)\n",t_elapsed,
          transactions/t_elapsed);
-      notifyGUI_2_int(0, 1, t_elapsed, transactions/t_elapsed);
+      notifyGUI_2_int(global_now, 0, 1, t_elapsed, transactions/t_elapsed);
 
 
       fprintf(fp,"\nFiles:\n");
       fprintf(fp,"\t%d created (%d per second)\n",files_created,
          files_created/elapsed);
-      notifyGUI_2_int(0, 2, files_created, files_created/elapsed);
+      notifyGUI_2_int(global_now, 0, 2, files_created, files_created/elapsed);
 
       interval=diff_time(t_start_time,start_time);
       fprintf(fp,"\t\tCreation alone: %d files (%d per second)\n",simultaneous,
          simultaneous/interval);
-      notifyGUI_2_int(0, 3, simultaneous, simultaneous/interval);
+      notifyGUI_2_int(global_now, 0, 3, simultaneous, simultaneous/interval);
       fprintf(fp,"\t\tMixed with transactions: %d files (%d per second)\n",
          files_created-simultaneous,(files_created-simultaneous)/t_elapsed);
-      notifyGUI_2_int(0, 4, files_created-simultaneous,(files_created-simultaneous)/t_elapsed );
+      notifyGUI_2_int(global_now, 0, 4, files_created-simultaneous,(files_created-simultaneous)/t_elapsed );
 
       fprintf(fp,"\t%d read (%d per second)\n",files_read,files_read/t_elapsed);
-      notifyGUI_2_int(0, 5, files_read, files_read/t_elapsed);
+      notifyGUI_2_int(global_now, 0, 5, files_read, files_read/t_elapsed);
 
       fprintf(fp,"\t%d appended (%d per second)\n",files_appended,
          files_appended/t_elapsed);
-      notifyGUI_2_int(0, 6, files_appended, files_appended/t_elapsed);
+      notifyGUI_2_int(global_now, 0, 6, files_appended, files_appended/t_elapsed);
 
       fprintf(fp,"\t%d deleted (%d per second)\n",files_deleted,
          files_deleted/elapsed);
-      notifyGUI_2_int(0, 7, files_deleted, files_deleted/elapsed);
+      notifyGUI_2_int(global_now, 0, 7, files_deleted, files_deleted/elapsed);
 
       interval=diff_time(end_time,t_end_time);
       fprintf(fp,"\t\tDeletion alone: %d files (%d per second)\n",deleted,
          deleted/interval);
-      notifyGUI_2_int(0, 8, deleted, deleted/interval);
+      notifyGUI_2_int(global_now, 0, 8, deleted, deleted/interval);
       fprintf(fp,"\t\tMixed with transactions: %d files (%d per second)\n",
          files_deleted-deleted,(files_deleted-deleted)/t_elapsed);
-      notifyGUI_2_int(0, 9, files_deleted-deleted, (files_deleted-deleted)/t_elapsed);
+      notifyGUI_2_int(global_now, 0, 9, files_deleted-deleted, (files_deleted-deleted)/t_elapsed);
 
       fprintf(fp,"\nData:\n");
       fprintf(fp,"\t%s read ",scalef(bytes_read));
       fprintf(fp,"(%s per second)\n",scalef(bytes_read/(float)elapsed));
-      notifyGUI_2_float(0, 10, bytes_read, bytes_read/(float)elapsed );
+      notifyGUI_2_float(global_now, 0, 10, bytes_read, bytes_read/(float)elapsed );
 
       fprintf(fp,"\t%s written ",scalef(bytes_written));
       fprintf(fp,"(%s per second)\n",scalef(bytes_written/(float)elapsed));
-      notifyGUI_2_float(0, 11, bytes_written, bytes_written/(float)elapsed);
+      notifyGUI_2_float(global_now, 0, 11, bytes_written, bytes_written/(float)elapsed);
 }
 
 void terse_report(fp,end_time,start_time,t_end_time,t_start_time,deleted)
@@ -895,7 +898,7 @@ int buffered; /* 1=buffered I/O (default), 0=unbuffered I/O */
          }
 
 
-      notifyGUI_2_int(2, (int)( (float)i/transactions * 100.0 ), 0, 0);
+      notifyGUI_2_int(global_now, 2, (int)( (float)i/transactions * 100.0 ), 0, 0);
       }
 
    return(transactions-i);
@@ -1025,7 +1028,7 @@ char *param; /* unused */
    {
       create_file(buffered_io);
       if (i % 10 == 0)
-        notifyGUI_2_int(1, (int)( (float)i/simultaneous * 100.0 ), 0, 0);
+        notifyGUI_2_int(global_now, 1, (int)( (float)i/simultaneous * 100.0 ), 0, 0);
    }
    printf("Done\n");
   
@@ -1045,11 +1048,11 @@ char *param; /* unused */
    {
       delete_file(i);
       if (i % 10 == 0)
-        notifyGUI_2_int(3, (int)( (float)i/simultaneous * 100.0 ), 0, 0);
+        notifyGUI_2_int(global_now, 3, (int)( (float)i/simultaneous * 100.0 ), 0, 0);
    }
    printf("Done\n");
 
-   notifyGUI_2_int(4, 0 , 0, 0);
+   notifyGUI_2_int(global_now, 4, 0 , 0, 0);
 
    /* print end time and difference, transaction numbers */
    time(&end_time);
@@ -1266,8 +1269,9 @@ int ignore;     /* ignore file not found */
 }
 
 /* main function - reads config files then enters get line/parse line loop */
-int postmark_main(int argc,char *argv[])
+int postmark_main(int postmark_now, int argc,char *argv[])
 {
+    global_now = postmark_now;
    //char buffer[MAX_LINE+1]; /* storage for input command line */
 
    //printf("PostMark %s\n",PM_VERSION);

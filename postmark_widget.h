@@ -10,6 +10,8 @@
 #include <QProgressBar>
 #include <QLabel>
 
+#include <QTableWidget>
+
 #include "paintedwidget.h"
 
 #include "postmark_paramwidget.h"
@@ -26,12 +28,18 @@ public:
     postmarkWidget(QWidget * parent);
 
 private:
-    QString *qstring_textEdit1;
+    QCheckBox * testramfs;
+    QCheckBox * testobfs;
+    QCheckBox * testpmfs;
+
+
     QPushButton *button;
-    QTextEdit *textEdit1;
+    QTableWidget *table;
+
+
 
     
-    PaintedWidget *paintwidget;
+    //PaintedWidget *paintwidget;
 
 
 
