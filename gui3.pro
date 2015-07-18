@@ -20,24 +20,24 @@ SOURCES += main.cpp\
     libbif.c \
     iozone_event.cpp \
     iozone_paramwidget.cpp \
-    iozone_thread.cpp \
     iozone_widget.cpp \
     postmark_paramwidget.cpp \
     postmark_widget.cpp \
     postmark_event.cpp \
     postmark_thread.cpp \
-    postmark-1.53.c
+    postmark-1.53.c \
+    iozone_thread.cpp
 
 HEADERS  += mainwindow.h \
     paintedwidget.h \
     iozone_event.h \
     iozone_paramwidget.h \
-    iozone_thread.h \
     iozone_widget.h \
     postmark_paramwidget.h \
     postmark_widget.h \
     postmark_event.h \
-    postmark_thread.h
+    postmark_thread.h \
+    iozone_thread.h
 
 DEFINES = unix HAVE_ANSIC_C ASYNC_IO NAME='"linux-AMD64"' __AMD64__ SHARED_MEM linux _LARGEFILE64_SOURCE HAVE_PREAD
 

@@ -3,13 +3,21 @@
 
 #include <QThread>
 #include <QObject>
+#include <QProcess>
+#include <QDateTime>
+
+#include "iozone_paramwidget.h"
+
+#define DEFAULT_ARGC 5
+#define DEFAULT_ARGV 32
+#define DEFAULT_ARG_CHAR 128
 
 class iozoneThread : public QThread
 {
     Q_OBJECT
 public:
-    struct iozone_param_struct * param;
-    iozoneThread(struct iozone_param_struct * p, QObject * parent = 0) : QThread(parent), param(p)
+    struct iozoneParamStruct * param;
+    iozoneThread(struct iozoneParamStruct * p, QObject * parent = 0) : QThread(parent), param(p)
     {
 
     }

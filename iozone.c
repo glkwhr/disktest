@@ -102,7 +102,7 @@ extern  int h_errno; /* imported for errors */
 int atoi();
 int close();
 int unlink();
-int iozone_main();
+int iozoneMain();
 void record_command_line();
 #if !defined(linux)
 int wait();
@@ -1615,7 +1615,7 @@ void cleanup_children();
 extern void notifyGUI(int type, long long kb, long long reclen, unsigned long long speed);
 
 int
-iozone_main(int argc,char *argv[32])
+iozoneMain(int argc,char *argv[32])
 {
 
 
