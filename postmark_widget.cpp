@@ -44,6 +44,8 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     testpmfs = new QCheckBox("pmfs", this);
     testpmfs->setChecked(true);
 
+    fslabel = new QLabel(this);
+    fslabel->setText("");
 
     pgsbar = new QProgressBar(this);
     pgsbar->setVisible(false);
@@ -63,8 +65,9 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     gridlayout->addWidget(testobfs, 1, 2);
     gridlayout->addWidget(testpmfs, 2, 2);
 
-    gridlayout->addWidget(pgslabel, 4, 1);
-    gridlayout->addWidget(pgsbar, 4, 2);
+    gridlayout->addWidget(fslabel, 4, 1, 1, 2);
+    gridlayout->addWidget(pgslabel, 5, 1);
+    gridlayout->addWidget(pgsbar, 5, 2);
 
     this->setLayout(gridlayout);
 }
@@ -73,7 +76,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 void postmarkWidget::buttonclicked()
 {
     struct postmark_param_struct * p = paramWidget->getParamData();
-    postmarkThread * postmarkthread = new postmarkThread(p, this->pgslabel);
+    postmarkThread * postmarkthread = new postmarkThread(p, this->fslabel);
 
     //显示进度条
     pgsbar->setVisible(true);

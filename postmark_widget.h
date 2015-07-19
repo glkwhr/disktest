@@ -46,6 +46,8 @@ private:
     QPushButton *parambutton;
     postmarkParamWidget * paramWidget;
 
+    QLabel * fslabel;
+
     QLabel *pgslabel;
     QProgressBar * pgsbar;
 };
