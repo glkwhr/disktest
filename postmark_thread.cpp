@@ -7,7 +7,12 @@ extern "C" {
 
 #include "postmark_paramwidget.h"
 #include <cstdio>
+#include <QSettings>
 
+#include <QSettings>
+#include <QFile>
+
+#include <QProcess>
 
 void postmarkThread::run()
 {
@@ -58,25 +63,160 @@ void postmarkThread::run()
 
     delete param;
 
-    //开始postmark的测试
-    label->setText("mount fs");
+    QString qsConfigDir("./config.ini");
+    QSettings * qsetConfig;
+    if(!QFile::exists(qsConfigDir))
+    {
+        qsetConfig = new QSettings(tr("config.ini"), QSettings::IniFormat);
 
-    label->setText("ok");
+        qsetConfig->beginGroup("testConfig");
+            qsetConfig->setValue("filesize", 16);
+            qsetConfig->setValue("flaga", true);
+            qsetConfig->setValue("flags", true);
+            qsetConfig->setValue("flagi0", true);
+            qsetConfig->setValue("flagi1", true);
+            qsetConfig->setValue("flagi2", true);
+        qsetConfig->endGroup();
+        qsetConfig->beginGroup("ramfs");
+            qsetConfig->setValue("filename", "/ramfs/tmpfile");
+            qsetConfig->setValue("dev", "/dev/ram0");
+            qsetConfig->setValue("mnt", "/ramfs");
+            qsetConfig->setValue("fstype", "ramfs");
+        qsetConfig->endGroup();
+        qsetConfig->beginGroup("obfs");
+            qsetConfig->setValue("filename", "/obfs/tmpfile");
+            qsetConfig->setValue("dev", "/dev/obfsdev");
+            qsetConfig->setValue("mnt", "/obfs");
+            qsetConfig->setValue("fstype", "obfs");
+        qsetConfig->endGroup();
+        qsetConfig->beginGroup("pmfs");
+            qsetConfig->setValue("filename", "/pmfs/tmpfile");
+            qsetConfig->setValue("dev", "/dev/pmfsdev");
+            qsetConfig->setValue("mnt", "/pmfs");
+            qsetConfig->setValue("fstype", "pmfs");
+        qsetConfig->endGroup();
+    }
+    else{
+        /* 读取ini文件 */
+        qsetConfig = new QSettings(tr("config.ini"), QSettings::IniFormat);
+        //qDebug()<<"read"<<endl;
+    }
+
+
+    QString qsRamfsDevDir;/* 设备路径 */
+    QString qsRamfsMntDir;/* 挂载路径 */
+    QString qsRamfsFsType;/* 文件系统类型 */
+
+
+    QString lineMount = "mount";
+    QStringList args;
+    //开始postmark的测试
+
+    //ramfs
+    qsetConfig->beginGroup("ramfs");
+        qsRamfsDevDir = qsetConfig->value("dev").toString();
+        qsRamfsMntDir = qsetConfig->value("mnt").toString();
+        qsRamfsFsType = qsetConfig->value("fstype").toString();
+    qsetConfig->endGroup();
+
+    //挂载ramfs
+    label->setText("mount ramfs...");
+    lineMount = "mkdir";
+    args.clear();
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+
+    lineMount = "mount";
+    args.clear();
+    args.append("-t");
+    args.append(qsRamfsFsType);
+    args.append(qsRamfsDevDir);
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+    sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
+    label->setText("Testing ramfs...");
+
     postmark_main(0, argc, argv);
 
-    //second file system
-    label->setText("mount fs");
+    label->setText("umount ramfs...");
+    //umount
+    lineMount = "umount";
+    args.clear();
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
 
-    label->setText("ok");
-    sprintf(argv[++i], "set location %s", "/home/yalewoo");
+
+
+    //obfs
+    qsetConfig->beginGroup("obfs");
+        qsRamfsDevDir = qsetConfig->value("dev").toString();
+        qsRamfsMntDir = qsetConfig->value("mnt").toString();
+        qsRamfsFsType = qsetConfig->value("fstype").toString();
+    qsetConfig->endGroup();
+    //挂载obfs
+    label->setText("mount obfs...");
+    lineMount = "mkdir";
+    args.clear();
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+
+    lineMount = "mount";
+    args.clear();
+    args.append("-t");
+    args.append(qsRamfsFsType);
+    args.append(qsRamfsDevDir);
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+    sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
+    label->setText("Testing obfs...");
+
     postmark_main(1, argc, argv);
 
-    //third file system
-    label->setText("mount fs");
+    label->setText("umount obfs...");
+    //umount
+    lineMount = "umount";
+    args.clear();
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
 
-    label->setText("ok");
-    sprintf(argv[++i], "set location %s", "/home/yalewoo" );
+
+
+
+    //pmfs
+    qsetConfig->beginGroup("pmfs");
+        qsRamfsDevDir = qsetConfig->value("dev").toString();
+        qsRamfsMntDir = qsetConfig->value("mnt").toString();
+        qsRamfsFsType = qsetConfig->value("fstype").toString();
+    qsetConfig->endGroup();
+
+    //挂载pmfs
+    label->setText("mount pmfs...");
+    lineMount = "mkdir";
+    args.clear();
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+
+    lineMount = "mount";
+    args.clear();
+    args.append("-t");
+    args.append(qsRamfsFsType);
+    args.append(qsRamfsDevDir);
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+    sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
+    label->setText("Testing pmfs...");
+
     postmark_main(2, argc, argv);
+
+    label->setText("umount pmfs...");
+    //umount
+    lineMount = "umount";
+    args.clear();
+    args.append(qsRamfsMntDir);
+    QProcess::execute(lineMount, args);
+
+
+
 
 
     for (int i = 0; i < 32; ++i)
