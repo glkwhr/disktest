@@ -5,6 +5,7 @@
 #include <QObject>
 
 #include <QLabel>
+#include <QProgressBar>
 
 class postmarkThread : public QThread
 {
@@ -13,8 +14,10 @@ public:
 
     struct postmark_param_struct * param;
     QLabel *label;
+    int whichfs;
+    QProgressBar * pgs;
 
-    postmarkThread(struct postmark_param_struct * p, QLabel *l, QObject * parent = 0) : QThread(parent), param(p), label(l)
+    postmarkThread(QProgressBar * pg, int w, struct postmark_param_struct * p, QLabel *l, QObject * parent = 0) : QThread(parent), pgs(pg), whichfs(w), param(p), label(l)
     {
 
     }

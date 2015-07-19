@@ -37,8 +37,8 @@ void postmarkThread::run()
 
     int i = -1;
 
-
-    sprintf(argv[++i], "set location %s", param->file_posi.toStdString().c_str() );
+    ++i;
+    //sprintf(argv[++i], "set location %s", param->file_posi.toStdString().c_str() );
 
     sprintf(argv[++i], "set size %d %d", param->file_size_min, param->file_size_max);
 
@@ -113,109 +113,120 @@ void postmarkThread::run()
     //开始postmark的测试
 
     //ramfs
-    qsetConfig->beginGroup("ramfs");
-        qsRamfsDevDir = qsetConfig->value("dev").toString();
-        qsRamfsMntDir = qsetConfig->value("mnt").toString();
-        qsRamfsFsType = qsetConfig->value("fstype").toString();
-    qsetConfig->endGroup();
+    if (whichfs & 4)
+    {
+        pgs->setVisible(true);
+        qsetConfig->beginGroup("ramfs");
+            qsRamfsDevDir = qsetConfig->value("dev").toString();
+            qsRamfsMntDir = qsetConfig->value("mnt").toString();
+            qsRamfsFsType = qsetConfig->value("fstype").toString();
+        qsetConfig->endGroup();
 
-    //挂载ramfs
-    label->setText("mount ramfs...");
-    lineMount = "mkdir";
-    args.clear();
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
+        //挂载ramfs
+        label->setText("mount ramfs...");
+        lineMount = "mkdir";
+        args.clear();
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
 
-    lineMount = "mount";
-    args.clear();
-    args.append("-t");
-    args.append(qsRamfsFsType);
-    args.append(qsRamfsDevDir);
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
-    sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
-    label->setText("Testing ramfs...");
+        lineMount = "mount";
+        args.clear();
+        args.append("-t");
+        args.append(qsRamfsFsType);
+        args.append(qsRamfsDevDir);
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
+        sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
+        label->setText("Testing ramfs...");
 
-    postmark_main(0, argc, argv);
+        postmark_main(0, argc, argv);
 
-    label->setText("umount ramfs...");
-    //umount
-    lineMount = "umount";
-    args.clear();
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
+        label->setText("umount ramfs...");
+        //umount
+        lineMount = "umount";
+        args.clear();
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
 
+    }
 
 
     //obfs
-    qsetConfig->beginGroup("obfs");
-        qsRamfsDevDir = qsetConfig->value("dev").toString();
-        qsRamfsMntDir = qsetConfig->value("mnt").toString();
-        qsRamfsFsType = qsetConfig->value("fstype").toString();
-    qsetConfig->endGroup();
-    //挂载obfs
-    label->setText("mount obfs...");
-    lineMount = "mkdir";
-    args.clear();
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
+    if (whichfs & 2)
+    {
+        pgs->setVisible(true);
+        qsetConfig->beginGroup("obfs");
+            qsRamfsDevDir = qsetConfig->value("dev").toString();
+            qsRamfsMntDir = qsetConfig->value("mnt").toString();
+            qsRamfsFsType = qsetConfig->value("fstype").toString();
+        qsetConfig->endGroup();
+        //挂载obfs
+        label->setText("mount obfs...");
+        lineMount = "mkdir";
+        args.clear();
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
 
-    lineMount = "mount";
-    args.clear();
-    args.append("-t");
-    args.append(qsRamfsFsType);
-    args.append(qsRamfsDevDir);
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
-    sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
-    label->setText("Testing obfs...");
+        lineMount = "mount";
+        args.clear();
+        args.append("-t");
+        args.append(qsRamfsFsType);
+        args.append(qsRamfsDevDir);
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
+        sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
+        label->setText("Testing obfs...");
 
-    postmark_main(1, argc, argv);
+        postmark_main(1, argc, argv);
 
-    label->setText("umount obfs...");
-    //umount
-    lineMount = "umount";
-    args.clear();
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
-
-
+        label->setText("umount obfs...");
+        //umount
+        lineMount = "umount";
+        args.clear();
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
+    }
 
 
     //pmfs
-    qsetConfig->beginGroup("pmfs");
-        qsRamfsDevDir = qsetConfig->value("dev").toString();
-        qsRamfsMntDir = qsetConfig->value("mnt").toString();
-        qsRamfsFsType = qsetConfig->value("fstype").toString();
-    qsetConfig->endGroup();
+    if (whichfs & 1)
+    {
+        pgs->setVisible(true);
+        qsetConfig->beginGroup("pmfs");
+            qsRamfsDevDir = qsetConfig->value("dev").toString();
+            qsRamfsMntDir = qsetConfig->value("mnt").toString();
+            qsRamfsFsType = qsetConfig->value("fstype").toString();
+        qsetConfig->endGroup();
 
-    //挂载pmfs
-    label->setText("mount pmfs...");
-    lineMount = "mkdir";
-    args.clear();
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
+        //挂载pmfs
+        label->setText("mount pmfs...");
+        lineMount = "mkdir";
+        args.clear();
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
 
-    lineMount = "mount";
-    args.clear();
-    args.append("-t");
-    args.append(qsRamfsFsType);
-    args.append(qsRamfsDevDir);
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
-    sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
-    label->setText("Testing pmfs...");
+        lineMount = "mount";
+        args.clear();
+        args.append("-t");
+        args.append(qsRamfsFsType);
+        args.append(qsRamfsDevDir);
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
+        sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
+        label->setText("Testing pmfs...");
 
-    postmark_main(2, argc, argv);
+        postmark_main(2, argc, argv);
 
-    label->setText("umount pmfs...");
-    //umount
-    lineMount = "umount";
-    args.clear();
-    args.append(qsRamfsMntDir);
-    QProcess::execute(lineMount, args);
+        label->setText("umount pmfs...");
+        //umount
+        lineMount = "umount";
+        args.clear();
+        args.append(qsRamfsMntDir);
+        QProcess::execute(lineMount, args);
+    }
 
-
+    pgs->setVisible(false);
+    label->setText("");
 
 
 

@@ -20,12 +20,15 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     button->setText(tr("Begin postmark Test"));
     connect(button, &QPushButton::clicked, this, &postmarkWidget::buttonclicked);
 
-    table = new QTableWidget(4, 6, this);
+    table = new QTableWidget(3, 6, this);
 
     QStringList header;
     header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
     table->setHorizontalHeaderLabels(header);
 
+    header.clear();
+    header << "ramfs" << "obfs" << "pmfs";
+    table->setVerticalHeaderLabels(header);
 
 
     //paintwidget = new PaintedWidget(this);
@@ -76,13 +79,24 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 void postmarkWidget::buttonclicked()
 {
     struct postmark_param_struct * p = paramWidget->getParamData();
-    postmarkThread * postmarkthread = new postmarkThread(p, this->fslabel);
+
+    int whichfs = 0;
+    if (testramfs->isChecked())
+        whichfs |= 4;
+    if (testobfs->isChecked())
+        whichfs |= 2;
+    if (testpmfs->isChecked())
+        whichfs |= 1;
+
+
+    postmarkThread * postmarkthread = new postmarkThread(pgsbar, whichfs, p, this->fslabel);
 
     //显示进度条
-    pgsbar->setVisible(true);
+
 
     //开始postmark测试线程
     postmarkthread->start();
+
 }
 void postmarkWidget::parambuttonclicked()
 {

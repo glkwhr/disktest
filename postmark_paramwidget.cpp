@@ -72,14 +72,14 @@ postmarkParamWidget::postmarkParamWidget(QWidget *parent):QWidget(parent)
 
 
     isbuffered = new QCheckBox("use buffer io", this);
-    isbuffered->setCheckState(Qt::Checked);
+    isbuffered->setCheckState(Qt::Unchecked);
 
 
     file_posi_label = new QLabel(this);
     file_posi_label->setText("file position:");
-    file_posi_qlineedit = new QLineEdit(this);
-    file_posi_qlineedit->setText("/home/yalewoo");
-    file_posi_select_button = new QPushButton("brower", this);
+    //file_posi_qlineedit = new QLineEdit(this);
+    //file_posi_qlineedit->setText("/home/yalewoo");
+    //file_posi_select_button = new QPushButton("brower", this);
 
 
     QGridLayout *layout = new QGridLayout;
@@ -110,9 +110,9 @@ postmarkParamWidget::postmarkParamWidget(QWidget *parent):QWidget(parent)
 
     layout->addWidget(isbuffered, 6, 0);
 
-    layout->addWidget(file_posi_label, 7, 0);
-    layout->addWidget(file_posi_qlineedit, 7, 1);
-    layout->addWidget(file_posi_select_button, 7, 2);
+    //layout->addWidget(file_posi_label, 7, 0);
+    //layout->addWidget(file_posi_qlineedit, 7, 1);
+    //layout->addWidget(file_posi_select_button, 7, 2);
 
     this->setLayout(layout);
 }
@@ -133,7 +133,7 @@ struct postmark_param_struct * postmarkParamWidget::getParamData()
     res->use_buffer_checked = isbuffered->isChecked();
 
 
-    res->file_posi = file_posi_qlineedit->text();
+    //res->file_posi = file_posi_qlineedit->text();
 
     return res;
 }
