@@ -127,9 +127,9 @@ void postmarkThread::run()
                 qsRamfsFsType = qsetConfig->value("fstype").toString();
             qsetConfig->endGroup();
 
-            //mke2fs
+            //mkfs
             label->setText("Formatting Device ...");
-            lineMount = "mke2fs";
+            lineMount = "mkfs";
             args.clear();
             args.append("-t");
             args.append(qsRamfsFsType);
