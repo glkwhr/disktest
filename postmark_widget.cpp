@@ -14,21 +14,24 @@
 
 #include <QStringList>
 
+
+char global_fschararray[FS_NUM][16] = {"ramfs", "tmpfs","ext2", "ext3", "ext4"};
+
+
 postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 {
     button = new QPushButton(this);
     button->setText(tr("Begin postmark Test"));
     connect(button, &QPushButton::clicked, this, &postmarkWidget::buttonclicked);
 
-    table = new QTableWidget(3, 6, this);
+    table = new QTableWidget(FS_NUM, 6, this);
 
     QStringList header;
     header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
     table->setHorizontalHeaderLabels(header);
 
-    header.clear();
-    header << "ramfs" << "obfs" << "pmfs";
-    table->setVerticalHeaderLabels(header);
+
+
 
 
     //paintwidget = new PaintedWidget(this);
@@ -40,12 +43,16 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     paramWidget = new postmarkParamWidget(this);
     paramWidget->setVisible(false);
 
-    testramfs = new QCheckBox("ramfs", this);
-    testramfs->setChecked(true);
-    testobfs = new QCheckBox("obfs", this);
-    testobfs->setChecked(true);
-    testpmfs = new QCheckBox("pmfs", this);
-    testpmfs->setChecked(true);
+
+    QHBoxLayout *selectfslayout = new QHBoxLayout;
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        selectfs[i] = new QCheckBox(global_fschararray[i], this);
+        selectfs[i]->setChecked(true);
+        selectfslayout->addWidget(selectfs[i]);
+    }
+
+
 
     fslabel = new QLabel(this);
     fslabel->setText("");
@@ -64,9 +71,8 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     gridlayout->addWidget(parambutton, 0, 1);
     gridlayout->addWidget(paramWidget, 0, 0, 5, 1);
 
-    gridlayout->addWidget(testramfs, 0, 2);
-    gridlayout->addWidget(testobfs, 1, 2);
-    gridlayout->addWidget(testpmfs, 2, 2);
+    gridlayout->addLayout(selectfslayout, 0, 2);
+
 
     gridlayout->addWidget(fslabel, 4, 1, 1, 2);
     gridlayout->addWidget(pgslabel, 5, 1);
@@ -78,15 +84,27 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 //按钮按下的槽函数
 void postmarkWidget::buttonclicked()
 {
+    table->setRowCount(0);
+    table->setRowCount(FS_NUM);
+    QStringList header;
+    header.clear();
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        header << global_fschararray[i];
+    }
+    table->setVerticalHeaderLabels(header);
+
     struct postmark_param_struct * p = paramWidget->getParamData();
 
     int whichfs = 0;
-    if (testramfs->isChecked())
-        whichfs |= 4;
-    if (testobfs->isChecked())
-        whichfs |= 2;
-    if (testpmfs->isChecked())
-        whichfs |= 1;
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        if (selectfs[i]->isChecked())
+        {
+            whichfs |= (1 << i);
+        }
+    }
+
 
 
     postmarkThread * postmarkthread = new postmarkThread(pgsbar, whichfs, p, this->fslabel);
@@ -160,9 +178,9 @@ int eventidTotableindex(int num)
 
 void postmarkWidget::myEventHandle(QEvent *e)
 {
-    static char test_type_table[32][32] = {
+   /* static char test_type_table[32][32] = {
         "total time", "transactions time", "created", "created along", "create mixed", "read", "append", "delete", "delete along", "delete mixed", "data read", "data written"
-    };
+    };*/
 
     postmarkEvent * pe = (postmarkEvent *)e;
 
@@ -184,13 +202,7 @@ void postmarkWidget::myEventHandle(QEvent *e)
             pgslabel->setText("Deleting files...");
             pgsbar->setValue(pe->type);
             break;
-        case 4:
-            if (pe->nowfs == 2)
-            {
-                pgslabel->setText("");
-                pgsbar->setVisible(false);
-            }
-            break;
+
 
         }
     }

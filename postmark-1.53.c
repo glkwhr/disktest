@@ -1052,7 +1052,7 @@ char *param; /* unused */
    }
    printf("Done\n");
 
-   notifyGUI_2_int(global_now, 4, 0 , 0, 0);
+
 
    /* print end time and difference, transaction numbers */
    time(&end_time);

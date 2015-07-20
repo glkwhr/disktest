@@ -14,6 +14,8 @@
 
 #include "paintedwidget.h"
 
+#include "postmark_thread.h"
+
 #include "postmark_paramwidget.h"
 
 
@@ -28,10 +30,10 @@ public:
 
     postmarkWidget(QWidget * parent);
 
+
 private:
-    QCheckBox * testramfs;
-    QCheckBox * testobfs;
-    QCheckBox * testpmfs;
+    QCheckBox * selectfs[FS_NUM];
+
 
 
     QPushButton *button;
