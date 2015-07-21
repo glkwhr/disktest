@@ -11,6 +11,8 @@
 #include <QProgressBar>
 
 #include "iozone_paramwidget.h"
+#include "iozone_thread.h"
+#include "iozone_event.h"
 
 #define OUTPUT_TYPE_WRITE 0
 #define OUTPUT_TYPE_REWRITE 1
@@ -39,6 +41,8 @@ private:
     QCheckBox *chkFlagIozoneLog;
     QProgressBar *progressBar;
     bool bFlagIozoneLog; //设置是否显示log窗口
+
+    //iozoneThread* iozonethread;
 
     iozoneParamWidget * paramWidget; /* 各种变量信息的获取 */
 };

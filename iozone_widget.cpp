@@ -1,8 +1,4 @@
 #include "iozone_widget.h"
-#include "iozone_paramwidget.h"
-
-#include "iozone_thread.h"
-#include "iozone_event.h"
 
 #include <QDebug>
 
@@ -78,7 +74,8 @@ void iozoneWidget::onStartRamfs()
     tableIozoneLog->clearContents();
     tableIozoneLog->setRowCount(0);
     struct iozoneParamStruct * p = paramWidget->getParamData(FILESYS_TYPE_RAMFS);
-    iozoneThread * iozonethread = new iozoneThread(p);
+    iozoneThread *iozonethread = new iozoneThread(p, this);
+    //connect(iozonethread, SIGNAL(finished()), iozonethread, SLOT(deleteLater()));
     iozonethread->start();
 }
 
@@ -101,6 +98,7 @@ void iozoneWidget::myEventHandle(QEvent *e)
     ioZoneEvent *ioze = (ioZoneEvent *)e;
     const int iRowCount = tableIozoneLog->rowCount(); //获取表单行数
     static bool bRowInserted = false; //插入新行的标记
+    /* 以下三个用于在一次iozone测试中记录"光标"位置 */
     static int iWriteRow = 0;
     static int iReadRow = 0;
     static int iRandRow = 0;

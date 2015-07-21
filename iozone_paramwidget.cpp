@@ -60,7 +60,8 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
         qsRamfsFsType = qsetConfig->value("fstype").toString();
     qsetConfig->endGroup();
 
-    iTotalTimes = (int)log2((double)iFileSize*1024) - 1;/* 用于进度条控制 */
+    iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
+    if(iTotalTimes > 13) iTotalTimes = 13;/* 用于进度条控制 */
 
     /* 配置文件选择 */
     btnConfigDir.setText(tr("..."));
@@ -126,7 +127,8 @@ void iozoneParamWidget::onFileSizeChanged(int iSetFileSize)
     iFileSize = 16;
     for(int i = 1; i<=iSetFileSize; i++)
         iFileSize *= 2;
-    iTotalTimes = (int)log2((double)iFileSize*1024) - 1;/*用于之后的进度条操作*/
+    iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
+    if(iTotalTimes>13) iTotalTimes = 13; /*用于之后的进度条操作*/
     labelFileSize.setText(QString::number(iFileSize)+tr(" M"));
 }
 
