@@ -26,11 +26,14 @@ private:
     iozoneWidget * widget1;
     postmarkWidget * widget2;
 
-    void openfile();
-    void savefile();
+
+
 
 
     bool event(QEvent *event);
+public slots:
+    void openfile();
+    void savefile();
 };
 
 #endif // MAINWINDOW_H

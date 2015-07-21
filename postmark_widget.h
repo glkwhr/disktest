@@ -22,10 +22,11 @@
 class postmarkWidget : public QWidget
 {
     Q_OBJECT
-public:
+public slots:
     void buttonclicked();
     void parambuttonclicked();
 
+public:
     void myEventHandle(QEvent * e);
 
     postmarkWidget(QWidget * parent);

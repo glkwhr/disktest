@@ -22,7 +22,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 {
     button = new QPushButton(this);
     button->setText(tr("Begin postmark Test"));
-    connect(button, SIGNAL(QPushButton::clicked()), this, SLOT(postmarkWidget::buttonclicked()));
+    connect(button, SIGNAL(clicked()), this, SLOT(buttonclicked()));
 
     table = new QTableWidget(FS_NUM, 6, this);
 
@@ -38,7 +38,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     parambutton = new QPushButton(this);
     parambutton->setText("<<< Details setting");
-    connect(parambutton, SIGNAL(QPushButton::clicked()), this, SLOT(postmarkWidget::parambuttonclicked()));
+    connect(parambutton, SIGNAL(clicked()), this, SLOT(parambuttonclicked()));
 
     paramWidget = new postmarkParamWidget(this);
     paramWidget->setVisible(false);
