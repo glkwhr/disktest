@@ -20,11 +20,7 @@ extern void notifyGUI(int type, long long kb, long long reclen, unsigned long lo
 
 
 extern "C" {
-    void notifyGUI(int type, long long kb, long long reclen, unsigned long long speed)
-    {
-        iozoneEvent *iozevent = new iozoneEvent(type, kb, reclen, speed);
-        QCoreApplication::postEvent(g_w, iozevent);
-    }
+
 
     void notifyGUI_2_int(int nowfs, int isprogress, int type, int total, int persecond)
     {
