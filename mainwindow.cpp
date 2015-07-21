@@ -85,7 +85,7 @@ void MainWindow::savefile()
 
 bool MainWindow::event(QEvent *e)
 {
-    if (e->type() == iozoneEvent::iozoneEventType)
+    if (e->type() == ioZoneEvent::ioZoneEventType)
     {
         widget1->myEventHandle(e);
         if (e->isAccepted())
