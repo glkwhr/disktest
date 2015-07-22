@@ -26,6 +26,9 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     table = new QTableWidget(FS_NUM, 6, this);
 
+    customPlot = new QCustomPlot(this);
+    customPlot->setFixedHeight(200);
+
     QStringList header;
     header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
     table->setHorizontalHeaderLabels(header);
@@ -64,7 +67,8 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     QGridLayout * gridlayout = new QGridLayout;
     gridlayout->addWidget(button, 1, 1);
-    gridlayout->addWidget(table, 3, 1, 1, 2);
+    gridlayout->addWidget(customPlot, 3, 1, 1, 2);
+    gridlayout->addWidget(table, 4, 1, 1, 2);
     //gridlayout->addWidget(paintwidget, 1, 1);
 
 
@@ -74,9 +78,9 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     gridlayout->addLayout(selectfslayout, 0, 2);
 
 
-    gridlayout->addWidget(fslabel, 4, 1, 1, 2);
-    gridlayout->addWidget(pgslabel, 5, 1);
-    gridlayout->addWidget(pgsbar, 5, 2);
+    gridlayout->addWidget(fslabel, 5, 1, 1, 2);
+    gridlayout->addWidget(pgslabel, 6, 1);
+    gridlayout->addWidget(pgsbar, 6, 2);
 
     this->setLayout(gridlayout);
 }
@@ -202,7 +206,12 @@ void postmarkWidget::myEventHandle(QEvent *e)
             pgslabel->setText("Deleting files...");
             pgsbar->setValue(pe->type);
             break;
-
+        case 4:
+            if (pe->nowfs == FS_NUM - 1)
+            {
+                // all data has been received
+                displayBarGraph();
+            }
 
         }
     }
@@ -229,5 +238,35 @@ void postmarkWidget::myEventHandle(QEvent *e)
     e->accept();
 }
 
+void postmarkWidget::displayBarGraph()
+{
+    int color[10][4] = {{0, 0, 255, 50},
+                        {180, 0, 120, 50},
+                        {255, 154, 0, 50},
+                        {0, 255, 0, 50},
+                        {255, 0, 0, 50}
+                       };
+    QCPBarsGroup *bargroup = new QCPBarsGroup(customPlot);
 
+    QVector<double> datax = QVector<double>() << 1 << 2 << 3 << 4 << 5 << 6;
+
+
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        QVector<double> datay = QVector<double>();
+        for (int j = 0; j < 6; ++j)
+        {
+            datay << table->item(i, j)->text().toDouble();
+        }
+
+        QCPBars *bars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+        customPlot->addPlottable(bars);
+        bars->setData(datax, datay);
+        bars->setBrush(QColor(0, 0, 255, 50));
+        bars->setPen(QColor(0, 0, 255));
+        bars->setWidth(0.15);
+        bars->setBarsGroup(bargroup);
+    }
+
+}
 

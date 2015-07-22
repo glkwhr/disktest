@@ -30,6 +30,7 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     iozone_chart.cpp
 
+
 HEADERS  += mainwindow.h \
     paintedwidget.h \
     iozone_event.h \
@@ -42,6 +43,7 @@ HEADERS  += mainwindow.h \
     iozone_thread.h \
     qcustomplot.h \
     iozone_chart.h
+
 
 DEFINES = unix HAVE_ANSIC_C ASYNC_IO NAME='"linux-AMD64"' __AMD64__ SHARED_MEM linux _LARGEFILE64_SOURCE HAVE_PREAD
 
