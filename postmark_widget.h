@@ -18,7 +18,7 @@
 
 #include "postmark_paramwidget.h"
 
-#include "qcustomplot.h"
+#include "postmark_chart.h"
 
 class postmarkWidget : public QWidget
 {
@@ -29,7 +29,6 @@ public slots:
 
 public:
     void myEventHandle(QEvent * e);
-    void displayBarGraph();
 
     postmarkWidget(QWidget * parent);
 
@@ -40,14 +39,12 @@ private:
 
 
     QPushButton *button;
+
+    QCheckBox *showtable;
     QTableWidget *table;
 
-    QCustomPlot *customPlot;
+    postmarkChart *chart;
 
-
-
-    
-    //PaintedWidget *paintwidget;
 
 
     QPushButton *parambutton;

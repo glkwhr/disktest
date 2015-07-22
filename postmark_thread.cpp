@@ -2,7 +2,7 @@
 
 extern "C" {
     int postmark_main(int nowfs, int argc, char *argv[32]);
-
+    extern void notifyGUI_2_int(int nowfs, int isprogress, int type, int total, int persecond);
 }
 
 #include "postmark_paramwidget.h"
@@ -163,7 +163,8 @@ void postmarkThread::run()
         }
     }
 
-
+    //send thread end signal
+    notifyGUI_2_int(FS_NUM-1, 4, 0, 0, 0);
 
     pgs->setVisible(false);
     label->setText("");
