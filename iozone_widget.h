@@ -13,6 +13,7 @@
 #include "iozone_paramwidget.h"
 #include "iozone_thread.h"
 #include "iozone_event.h"
+#include "iozone_chart.h"
 
 #define OUTPUT_TYPE_WRITE 0
 #define OUTPUT_TYPE_REWRITE 1
@@ -42,7 +43,7 @@ private:
     QProgressBar *progressBar;
     bool bFlagIozoneLog; //设置是否显示log窗口
 
-    //iozoneThread* iozonethread;
+    iozoneChart *chartWidget;/* 图表部件 */
 
     iozoneParamWidget * paramWidget; /* 各种变量信息的获取 */
 };

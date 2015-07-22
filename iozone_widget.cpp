@@ -40,6 +40,7 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     connect(btnStartPmfs, SIGNAL(clicked()), this, SLOT(onStartPmfs()));
 
     paramWidget = new iozoneParamWidget(this);
+    chartWidget = new iozoneChart(this);
 
     QGridLayout *gridlayoutUp = new QGridLayout;
     QGridLayout *gridlayoutMain = new QGridLayout;
@@ -48,8 +49,8 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     gridlayoutUp->addWidget(btnStartObfs, 0, 2);
     gridlayoutUp->addWidget(btnStartPmfs, 0, 3);
     gridlayoutMain->addLayout(gridlayoutUp, 0, 0);
-    QSpacerItem *vSpacer0 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    gridlayoutMain->addItem(vSpacer0, 1, 0);
+    //QSpacerItem *vSpacer0 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    gridlayoutMain->addWidget(chartWidget, 1, 0);
     gridlayoutMain->addWidget(chkFlagIozoneLog, 2, 0);
     gridlayoutMain->addWidget(tableIozoneLog, 3, 0);
     gridlayoutMain->addWidget(progressBar, 4, 0);
