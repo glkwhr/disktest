@@ -52,8 +52,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    connect(openAction, &QAction::triggered, this, &MainWindow::openfile);
-    connect(saveAction, &QAction::triggered, this, &MainWindow::savefile);
+    connect(openAction, SIGNAL(triggered()), this, SLOT(openfile()));
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(savefile()));
 }
 
 MainWindow::~MainWindow()
@@ -61,15 +61,17 @@ MainWindow::~MainWindow()
 
 }
 
+
+
 void MainWindow::openfile()
 {
-
+    QMessageBox::information(NULL, "open", "open a file");
 
 
 }
 void MainWindow::savefile()
 {
-
+    QMessageBox::information(NULL, "save", "save a file");
 }
 
 

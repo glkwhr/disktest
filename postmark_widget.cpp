@@ -12,21 +12,50 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
+#include <QStringList>
+
+
+char global_fschararray[FS_NUM][16] = {"ramfs", "tmpfs","ext2", "ext3", "ext4"};
 
 
 postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 {
     button = new QPushButton(this);
     button->setText(tr("Begin postmark Test"));
-    connect(button, &QPushButton::clicked, this, &postmarkWidget::buttonclicked);
+    connect(button, SIGNAL(clicked()), this, SLOT(buttonclicked()));
 
-    textEdit1 = new QTextEdit(this);
-    paintwidget = new PaintedWidget(this);
+    table = new QTableWidget(FS_NUM, 6, this);
 
-    qstring_textEdit1 = new QString();
+    QStringList header;
+    header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
+    table->setHorizontalHeaderLabels(header);
+
+
+
+
+
+    //paintwidget = new PaintedWidget(this);
+
+    parambutton = new QPushButton(this);
+    parambutton->setText("<<< Details setting");
+    connect(parambutton, SIGNAL(clicked()), this, SLOT(parambuttonclicked()));
 
     paramWidget = new postmarkParamWidget(this);
+    paramWidget->setVisible(false);
 
+
+    QHBoxLayout *selectfslayout = new QHBoxLayout;
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        selectfs[i] = new QCheckBox(global_fschararray[i], this);
+        selectfs[i]->setChecked(true);
+        selectfslayout->addWidget(selectfs[i]);
+    }
+
+
+
+    fslabel = new QLabel(this);
+    fslabel->setText("");
 
     pgsbar = new QProgressBar(this);
     pgsbar->setVisible(false);
@@ -34,13 +63,20 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     pgslabel->setText("");
 
     QGridLayout * gridlayout = new QGridLayout;
-    gridlayout->addWidget(button, 1, 0);
-    gridlayout->addWidget(textEdit1, 0, 1);
-    gridlayout->addWidget(paintwidget, 1, 1);
-    gridlayout->addWidget(paramWidget, 0, 0);
+    gridlayout->addWidget(button, 1, 1);
+    gridlayout->addWidget(table, 3, 1, 1, 2);
+    //gridlayout->addWidget(paintwidget, 1, 1);
 
-    gridlayout->addWidget(pgslabel, 2, 0);
-    gridlayout->addWidget(pgsbar, 2, 1);
+
+    gridlayout->addWidget(parambutton, 0, 1);
+    gridlayout->addWidget(paramWidget, 0, 0, 5, 1);
+
+    gridlayout->addLayout(selectfslayout, 0, 2);
+
+
+    gridlayout->addWidget(fslabel, 4, 1, 1, 2);
+    gridlayout->addWidget(pgslabel, 5, 1);
+    gridlayout->addWidget(pgsbar, 5, 2);
 
     this->setLayout(gridlayout);
 }
@@ -48,14 +84,45 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 //按钮按下的槽函数
 void postmarkWidget::buttonclicked()
 {
+    table->setRowCount(0);
+    table->setRowCount(FS_NUM);
+    QStringList header;
+    header.clear();
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        header << global_fschararray[i];
+    }
+    table->setVerticalHeaderLabels(header);
+
     struct postmark_param_struct * p = paramWidget->getParamData();
-    postmarkThread * postmarkthread = new postmarkThread(p);
+
+    int whichfs = 0;
+    for (int i = 0; i < FS_NUM; ++i)
+    {
+        if (selectfs[i]->isChecked())
+        {
+            whichfs |= (1 << i);
+        }
+    }
+
+
+
+    postmarkThread * postmarkthread = new postmarkThread(pgsbar, whichfs, p, this->fslabel);
 
     //显示进度条
-    pgsbar->setVisible(true);
+
 
     //开始postmark测试线程
     postmarkthread->start();
+
+}
+void postmarkWidget::parambuttonclicked()
+{
+    paramWidget->setVisible(!paramWidget->isVisible());
+    if (paramWidget->isVisible())
+        parambutton->setText(">>> Details setting");
+    else
+        parambutton->setText("<<< Details setting");
 }
 
 
@@ -79,11 +146,41 @@ char *scalef(float i, char *buffer)
 }
 
 
+
+int eventidTotableindex(int num)
+{
+    //2  5 6 7 10 11
+    switch (num)
+    {
+    case 2:
+        return 0;
+        break;
+    case 5:
+        return 1;
+        break;
+    case 6:
+        return 2;
+        break;
+    case 7:
+        return 3;
+        break;
+    case 10:
+        return 4;
+        break;
+    case 11:
+        return 5;
+        break;
+    default:
+        return -1;
+
+    }
+}
+
 void postmarkWidget::myEventHandle(QEvent *e)
 {
-    static char test_type_table[32][32] = {
+   /* static char test_type_table[32][32] = {
         "total time", "transactions time", "created", "created along", "create mixed", "read", "append", "delete", "delete along", "delete mixed", "data read", "data written"
-    };
+    };*/
 
     postmarkEvent * pe = (postmarkEvent *)e;
 
@@ -105,38 +202,27 @@ void postmarkWidget::myEventHandle(QEvent *e)
             pgslabel->setText("Deleting files...");
             pgsbar->setValue(pe->type);
             break;
-        case 4:
-            pgslabel->setText("");
-            pgsbar->setVisible(false);
-            break;
+
 
         }
     }
     else
     {   //数据
         //data message
-
-
-
-
-        QString tmp;
-
-        if (((postmarkEvent *)e)->type != 10 && ((postmarkEvent *)e)->type != 11)
+        if (eventidTotableindex(pe->type) != -1)
         {
-            tmp.sprintf("%s--> %d  ( %d per second)\n",test_type_table[((postmarkEvent *)e)->type],
-                        ((postmarkEvent *)e)->total, ((postmarkEvent *)e)->persecond );
-        }
-        else
-        {
-            char buff1[32];
-            char buff2[32];
-            tmp.sprintf("%s--> %s ( %s per second)\n",test_type_table[((postmarkEvent *)e)->type],
-                        scalef( ((postmarkEvent *)e)->totalf, buff1) , scalef( ((postmarkEvent *)e)->persecondf, buff2 ) );
+            if (((postmarkEvent *)e)->type != 10 && ((postmarkEvent *)e)->type != 11)
+            {
+                table->setItem(pe->nowfs, eventidTotableindex(pe->type), new QTableWidgetItem(QString::number(pe->persecond)));
+            }
+            else
+            {
+                char buff[64];
+                table->setItem(pe->nowfs, eventidTotableindex(pe->type), new QTableWidgetItem(scalef(pe->persecondf, buff)));
+            }
         }
 
 
-        qstring_textEdit1->append(tmp);
-        textEdit1->setText(*qstring_textEdit1);
 
     }
 
