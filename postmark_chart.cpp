@@ -3,18 +3,21 @@
 
 postmarkChart::postmarkChart(QTableWidget *tbl, QWidget *parent):QCustomPlot(parent), table(tbl)
 {
-    QVector<QString> labels(6);
-    labels[0] = "Create";
-    labels[1] = "Read";
-    labels[2] = "Append";
-    labels[3] = "Delete";
-    labels[4] = "Read data";
-    labels[5] = "Write data";
+    QVector<QString> labels(12);
+    int i = -1;
+    labels[++i] = "     ";
+    labels[++i] = "Create";
+    labels[++i] = "Read";
+    labels[++i] = "Append";
+    labels[++i] = "Delete";
+    labels[++i] = "Read data";
+    labels[++i] = "Write data";
 
     bargroup = new QCPBarsGroup(this);
+    bargroup->setSpacing(1);
 
 
-    this->xAxis->setAutoTicks(false);
+    //this->xAxis->setAutoTicks(false);
     this->xAxis->setAutoTickLabels(false);
     this->xAxis->setTickVectorLabels(labels);
 }
