@@ -88,7 +88,11 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     gridlayout->addWidget(pgslabel, 6, 2);
     gridlayout->addWidget(pgsbar, 7, 1);
 
-    this->setLayout(gridlayout);
+    QGridLayout *layout = new QGridLayout;
+    layout->addWidget(paramWidget, 0, 0);
+    layout->addLayout(gridlayout, 0, 1);
+
+    this->setLayout(layout);
 }
 
 //按钮按下的槽函数
