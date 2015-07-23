@@ -13,6 +13,9 @@ postmarkChart::postmarkChart(QTableWidget *tbl, QWidget *parent):QCustomPlot(par
 
     bargroup = new QCPBarsGroup(this);
 
+
+    this->xAxis->setAutoTicks(false);
+    this->xAxis->setAutoTickLabels(false);
     this->xAxis->setTickVectorLabels(labels);
 }
 
