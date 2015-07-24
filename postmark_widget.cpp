@@ -34,7 +34,11 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
 
 
-    chart = new postmarkChart(table, this);
+    chart1 = new postmarkChart(0, table, this);
+    chart1->setFixedHeight(300);
+
+    chart2 = new postmarkChart(1, table, this);
+    chart2->setFixedHeight(300);
 
 
     QStringList header;
@@ -72,7 +76,12 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     QGridLayout * gridlayout = new QGridLayout;
     gridlayout->addWidget(button, 1, 1);
-    gridlayout->addWidget(chart, 3, 1, 1, 2);
+
+    QHBoxLayout *chartlayout = new QHBoxLayout();
+    chartlayout->addWidget(chart1);
+    chartlayout->addWidget(chart2);
+
+    gridlayout->addLayout(chartlayout, 3, 1, 1, 2);
 
     gridlayout->addWidget(showtable, 4, 1, 1, 1);
     gridlayout->addWidget(table, 5, 1, 1, 2);
@@ -220,7 +229,8 @@ void postmarkWidget::myEventHandle(QEvent *e)
                 fslabel->setVisible(false);
                 pgslabel->setVisible(false);
                 // all data has been received
-                chart->update();
+                chart1->update();
+                chart2->update();
             }
 
         }

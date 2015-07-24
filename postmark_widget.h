@@ -43,7 +43,8 @@ private:
     QCheckBox *showtable;
     QTableWidget *table;
 
-    postmarkChart *chart;
+    postmarkChart *chart1;
+    postmarkChart *chart2;
 
 
 
