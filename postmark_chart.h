@@ -3,15 +3,18 @@
 
 #include "qcustomplot.h"
 
+#include "postmark_thread.h"
 
 class postmarkChart : public QCustomPlot
 {
     Q_OBJECT
-private:
+public:
     QTableWidget *table;
     QCPBarsGroup *bargroup;
     int kind;   //0 create append read delete
                 //1 read data write data
+
+    QCPBars *bars[FS_NUM];
 
 
 public:
