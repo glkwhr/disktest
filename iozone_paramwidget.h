@@ -14,14 +14,23 @@
 
 #include <cmath>
 
-
+#ifndef FILESYS_TYPE
+#define FILESYS_TYPE
 #define FILESYS_TYPE_RAMFS 0
 #define FILESYS_TYPE_OBFS 1
 #define FILESYS_TYPE_PMFS 2
+#endif
+
+#ifndef DEFAULT_CONFIG
+#define DEFAULT_CONFIG
+#define DEFAULT_CONFIG_FILESIZE 16
+#define DEFAULT_CONFIG_TESTTIMES 2
+#endif
 
 struct iozoneParamStruct{
     /*设置参数*/
-    int iFileSize;
+    int iFileSize; /* 文件大小 */
+    int iTestTimes;
     bool bFlaga;
     bool bFlags;
     bool bFlagi0;
@@ -44,6 +53,7 @@ public:
     void setRunFlag(bool);/* 向iozoneWidget类提供设置运行状态接口 */
     bool getRunFlag(void) { return bFlagRun; }
     int getTotalTimes(void) { return iTotalTimes; }
+    int getTestTimes(void) { return iTestTimes; }
 
 public slots:
     void onFileSizeChanged(int);
@@ -57,6 +67,7 @@ private:
     QPushButton btnConfigDir;
 
     int iFileSize;
+    int iTestTimes; /* 点击一次start后一轮进行的测试次数 */
     /* iTotalTimes: 需要进行测试的次数(以iozone中不同reclen来计,主要用来控制进度条) */
     int iTotalTimes;
     bool bFlaga;
