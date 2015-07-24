@@ -10,10 +10,12 @@ class postmarkChart : public QCustomPlot
 private:
     QTableWidget *table;
     QCPBarsGroup *bargroup;
+    int kind;   //0 create append read delete
+                //1 read data write data
 
 
 public:
-    postmarkChart(QTableWidget *table, QWidget *parent = 0);
+    postmarkChart(int k, QTableWidget *table, QWidget *parent = 0);
     void update();
 
 signals:

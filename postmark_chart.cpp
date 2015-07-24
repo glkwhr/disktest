@@ -1,25 +1,42 @@
 #include "postmark_chart.h"
 #include "postmark_thread.h"
 
-postmarkChart::postmarkChart(QTableWidget *tbl, QWidget *parent):QCustomPlot(parent), table(tbl)
+postmarkChart::postmarkChart(int k, QTableWidget *tbl, QWidget *parent):QCustomPlot(parent), table(tbl)
 {
+    kind = k;
     QVector<QString> labels(12);
-    int i = -1;
-    labels[++i] = "     ";
-    labels[++i] = "Create";
-    labels[++i] = "Read";
-    labels[++i] = "Append";
-    labels[++i] = "Delete";
-    labels[++i] = "Read data";
-    labels[++i] = "Write data";
+    if (k == 0)
+    {
+        int i = -1;
+        labels[++i] = "     ";
+        labels[++i] = "Create";
+        labels[++i] = "Read";
+        labels[++i] = "Append";
+        labels[++i] = "Delete";
+
+    }
+    else
+    {
+        int i = -1;
+        labels[++i] = "     ";
+        labels[++i] = "Read data";
+        labels[++i] = "Write data";
+    }
+
 
     bargroup = new QCPBarsGroup(this);
     bargroup->setSpacing(1);
+
+    this->yAxis->setLabel("file number");
 
 
     //this->xAxis->setAutoTicks(false);
     this->xAxis->setAutoTickLabels(false);
     this->xAxis->setTickVectorLabels(labels);
+
+    this->legend->setVisible(true);
+    this->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
+    this->legend->setBrush(QColor(255, 255, 255, 200));
 }
 
 void postmarkChart::update()
@@ -31,8 +48,16 @@ void postmarkChart::update()
                         {255, 0, 0, 50}
                        };
 
+    QVector<double> datax;
+    if (kind == 0)
+    {
+         datax << 1 << 2 << 3 << 4 ;
+    }
+    else
+    {
+        datax << 1 << 2;
+    }
 
-    QVector<double> datax = QVector<double>() << 1 << 2 << 3 << 4 << 5 << 6;
 
 
     for (int i = 0; i < FS_NUM; ++i)
@@ -43,10 +68,25 @@ void postmarkChart::update()
         }
         QVector<double> datay = QVector<double>();
         datay.clear();
-        for (int j = 0; j < 6; ++j)
+        if (kind == 0)
         {
-            datay << table->item(i, j)->text().toDouble();
+            for (int j = 0; j < 4; ++j)
+            {
+
+                datay << table->item(i, j)->text().toDouble();
+
+            }
         }
+        else
+        {
+            for (int j = 4; j < 6; ++j)
+            {
+                QString t(table->item(i, j)->text());
+                QStringList list = t.split(" ");
+                datay << list[0].toDouble();
+            }
+        }
+
 
         QCPBars *bars = new QCPBars(this->xAxis, this->yAxis);
         this->addPlottable(bars);
@@ -55,10 +95,22 @@ void postmarkChart::update()
         bars->setPen(QColor(color[i][0], color[i][1], color[i][2]));
         bars->setWidth(0.15);
         bars->setBarsGroup(bargroup);
+
+        extern char global_fschararray[FS_NUM][16];
+        bars->setName(global_fschararray[i]);
     }
 
-    this->xAxis->setRange(0.1, 6.9);
-    this->yAxis->setRange(0, 5000);
+
+    if (kind == 0)
+    {
+        this->xAxis->setRange(0.1, 4.9);
+        this->yAxis->setRange(0, 5000);
+    }
+    else
+    {
+        this->xAxis->setRange(0.1, 2.9);
+        this->yAxis->setRange(0, 50);
+    }
     this->xAxis->setAutoTickStep(false);
     this->xAxis->setTickStep(1);
 
