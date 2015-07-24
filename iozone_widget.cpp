@@ -157,12 +157,7 @@ void iozoneWidget::myEventHandle(QEvent *e)
         /*改变进度条值*/
         progressBar->setValue(iRowCount*100/paramWidget->getTotalTimes());
     }
-
-    /* 更新数据模型 */
     unsigned long long tmpRate;
-    tmpRate = ( rateModel->data(iCurFsType, ioze->llRecLen, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
-    rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
-
     switch( ioze->iType ){
 
     /*write_perf_test output*/
@@ -176,6 +171,10 @@ void iozoneWidget::myEventHandle(QEvent *e)
         item->setText( QString::number( (long)(ioze->ullRate) ) );
         item->setTextAlignment(Qt::AlignCenter);
         tableIozoneLog->setItem(siWriteRow, 2+OUTPUT_TYPE_WRITE, item);
+        /* 更新数据模型 */
+        //unsigned long long tmpRate;
+        tmpRate = ( rateModel->data(iCurFsType, siWriteRow, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
+        rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
         break;
 
     case OUTPUT_TYPE_REWRITE: /*rewrite栏*/
@@ -183,6 +182,10 @@ void iozoneWidget::myEventHandle(QEvent *e)
         item->setText( QString::number( ioze->ullRate ) );
         item->setTextAlignment(Qt::AlignCenter);
         tableIozoneLog->setItem(siWriteRow, 2+OUTPUT_TYPE_REWRITE, item);
+        /* 更新数据模型 */
+        //unsigned long long tmpRate;
+        tmpRate = ( rateModel->data(iCurFsType, siWriteRow, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
+        rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
          /*"光标"下移*/
         ++siWriteRow;
         if(progressBar->value() == 100)
@@ -201,6 +204,10 @@ void iozoneWidget::myEventHandle(QEvent *e)
         item->setText( QString::number( (long)(ioze->ullRate) ) );
         item->setTextAlignment(Qt::AlignCenter);
         tableIozoneLog->setItem(siReadRow, 2+OUTPUT_TYPE_READ, item);
+        /* 更新数据模型 */
+        //unsigned long long tmpRate;
+        tmpRate = ( rateModel->data(iCurFsType, siReadRow, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
+        rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
         break;
 
     case OUTPUT_TYPE_REREAD: /*reread栏*/
@@ -208,6 +215,10 @@ void iozoneWidget::myEventHandle(QEvent *e)
         item->setText( QString::number( ioze->ullRate ) );
         item->setTextAlignment(Qt::AlignCenter);
         tableIozoneLog->setItem(siReadRow, 2+OUTPUT_TYPE_REREAD, item);
+        /* 更新数据模型 */
+        //unsigned long long tmpRate;
+        tmpRate = ( rateModel->data(iCurFsType, siReadRow, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
+        rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
         ++siReadRow;
         if(progressBar->value() == 100)
         {   /*单次进度条已满*/
@@ -225,6 +236,10 @@ void iozoneWidget::myEventHandle(QEvent *e)
         item->setText( QString::number( (long)(ioze->ullRate) ) );
         item->setTextAlignment(Qt::AlignCenter);
         tableIozoneLog->setItem(siRandRow, 2+OUTPUT_TYPE_RANDREAD, item);
+        /* 更新数据模型 */
+        //unsigned long long tmpRate;
+        tmpRate = ( rateModel->data(iCurFsType, siRandRow, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
+        rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
         break;
 
     case OUTPUT_TYPE_RANDWRITE: /*randwrite栏*/
@@ -232,17 +247,34 @@ void iozoneWidget::myEventHandle(QEvent *e)
         item->setText( QString::number( ioze->ullRate ) );
         item->setTextAlignment(Qt::AlignCenter);
         tableIozoneLog->setItem(siRandRow, 2+OUTPUT_TYPE_RANDWRITE, item);
+        /* 更新数据模型 */
+        //unsigned long long tmpRate;
+        tmpRate = ( rateModel->data(iCurFsType, siRandRow, ioze->iType) * siCurTimes + ioze->ullRate ) / (siCurTimes + 1);
+        rateModel->addRawRateData(iCurFsType, ioze->llRecLen, ioze->iType, tmpRate);
         ++siRandRow;
         if(progressBar->value() == 100)
-        {   /*单次进度条已满*/
+        {
             siRandRow = 0;
+            /*单次进度条已满 由于randwrite一定是一次测试中最后的输出
+            故将结束时的处理放在此处 但前提是进行测试的项目包括randr/w
+            即参数需包括 "-i 2" */
+            chartView->update();
+            progressBar->setValue(0);
+            ++siCurTimes;
+            if ( siCurTimes == paramWidget->getTestTimes() )
+            {   /* 多轮测试都已结束 */
+                siCurTimes = 0;
+                progressBar->setVisible(false);
+                //qDebug()<<"ok";
+            }
+            else
+            {
+                /* 清空表格 */
+                tableIozoneLog->clearContents();
+                tableIozoneLog->setRowCount(0);
+            }
         }
         break;
-    }
-    if ( progressBar->value() == 100 )
-    {   /* 单次进度条满 */
-        chartView->update();
-        progressBar->setVisible(false);
     }
     e->accept();
 }

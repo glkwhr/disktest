@@ -92,6 +92,8 @@ void iozoneThread::run()
 
     iozoneThread *p = this;
     pid_t pid;
+    i = 0;
+    goFork:
     if((pid = fork())==0){
         /* 子进程 */
         /* 共享内存 */
@@ -122,6 +124,7 @@ void iozoneThread::run()
     }
     else if(pid>0){
         /* 父进程中 */
+        ++i;
         /* 共享内存 */
         shmid = shmget( ftok(".", 1), sizeof(struct shmNotify), 0666|IPC_CREAT);
         if(shmid == -1)
@@ -152,6 +155,7 @@ void iozoneThread::run()
             }
         }
         waitpid(pid, NULL, 0);/* 等待子进程 */
+        if ( i<param->iTestTimes ) goto goFork;
         /* 把共享内存从当前进程分离 */
         if(shmdt(pShmNotify) == -1)
         {
