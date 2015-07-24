@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     postmark-1.53.c \
     iozone_thread.cpp \
     qcustomplot.cpp \
-    iozone_chart.cpp
+    iozone_chart.cpp \
+    iozone_rate_model.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     postmark_thread.h \
     iozone_thread.h \
     qcustomplot.h \
-    iozone_chart.h
+    iozone_chart.h \
+    iozone_rate_model.h
 
 
 DEFINES = unix HAVE_ANSIC_C ASYNC_IO NAME='"linux-AMD64"' __AMD64__ SHARED_MEM linux _LARGEFILE64_SOURCE HAVE_PREAD
