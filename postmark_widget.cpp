@@ -40,6 +40,10 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     chart2 = new postmarkChart(1, table, this);
     chart2->setFixedHeight(300);
 
+    QTabWidget * tabwidget = new QTabWidget(this);
+    tabwidget->addTab(chart1, "files");
+    tabwidget->addTab(chart2, "bytes");
+
 
     QStringList header;
     header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
@@ -77,11 +81,12 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     QGridLayout * gridlayout = new QGridLayout;
     gridlayout->addWidget(button, 1, 1);
 
-    QHBoxLayout *chartlayout = new QHBoxLayout();
-    chartlayout->addWidget(chart1);
-    chartlayout->addWidget(chart2);
+    //QHBoxLayout *chartlayout = new QHBoxLayout();
+    //chartlayout->addWidget(chart1);
+    //chartlayout->addWidget(chart2);
 
-    gridlayout->addLayout(chartlayout, 3, 1, 1, 2);
+    //gridlayout->addLayout(chartlayout, 3, 1, 1, 2);
+    gridlayout->addWidget(tabwidget, 3, 1, 1, 2);
 
     gridlayout->addWidget(showtable, 4, 1, 1, 1);
     gridlayout->addWidget(table, 5, 1, 1, 2);
@@ -95,7 +100,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     gridlayout->addWidget(fslabel, 6, 1);
     gridlayout->addWidget(pgslabel, 6, 2);
-    gridlayout->addWidget(pgsbar, 7, 1);
+    gridlayout->addWidget(pgsbar, 7, 1, 1, 2);
 
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(paramWidget, 0, 0);
@@ -107,6 +112,11 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 //按钮按下的槽函数
 void postmarkWidget::buttonclicked()
 {
+
+    chart1->clearItems();
+    chart2->clearItems();
+
+
     table->setRowCount(0);
     table->setRowCount(FS_NUM);
     QStringList header;
@@ -155,13 +165,13 @@ char *scalef(float i, char *buffer)
 {
 
 
-   if (i/(float)MEGABYTE>1)
+   //if (i/(float)MEGABYTE>1)
       sprintf(buffer,"%.2f megabytes",i/(float)MEGABYTE);
-   else
+   /*else
       if (i/(float)KILOBYTE)
          sprintf(buffer,"%.2f kilobytes",i/(float)KILOBYTE);
       else
-         sprintf(buffer,"%f bytes",i);
+         sprintf(buffer,"%f bytes",i);*/
 
    return (buffer);
 }
