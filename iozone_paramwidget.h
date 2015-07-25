@@ -31,6 +31,8 @@ struct iozoneParamStruct{
     /*设置参数*/
     int iFileSize; /* 文件大小 */
     int iTestTimes;
+    bool bFlagMkfs; /* 格式化 */
+    bool bFlagMnt; /* 挂载 */
     bool bFlaga;
     bool bFlags;
     bool bFlagi0;
@@ -70,6 +72,8 @@ private:
     int iTestTimes; /* 点击一次start后一轮进行的测试次数 */
     /* iTotalTimes: 需要进行测试的次数(以iozone中不同reclen来计,主要用来控制进度条) */
     int iTotalTimes;
+    bool bFlagMkfs; /* 格式化 */
+    bool bFlagMnt; /* 挂载 */
     bool bFlaga;
     bool bFlags;
     bool bFlagi0;

@@ -16,6 +16,8 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
         qsetConfig->beginGroup("testConfig");
             qsetConfig->setValue("filesize", DEFAULT_CONFIG_FILESIZE);
             qsetConfig->setValue("testtimes", DEFAULT_CONFIG_TESTTIMES);
+            qsetConfig->setValue("mkfs", false);/* 是否自动格式化 */
+            qsetConfig->setValue("mount", false); /* 是否自动挂载/卸载 */
             qsetConfig->setValue("flaga", true);
             qsetConfig->setValue("flags", true);
             qsetConfig->setValue("flagi0", true);
@@ -49,7 +51,9 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
     /* 从当前目录下的ini文件读取配置信息 */
     qsetConfig->beginGroup("testConfig");
         iFileSize = qsetConfig->value("filesize").toInt();
-        iTestTimes = qsetConfig->value("testtimes").toInt(); qDebug()<<iTestTimes;
+        iTestTimes = qsetConfig->value("testtimes").toInt(); //qDebug()<<iTestTimes;
+        bFlagMkfs = qsetConfig->value("mkfs").toBool();/* 是否自动格式化 */
+        bFlagMnt = qsetConfig->value("mount").toBool();
         bFlaga = qsetConfig->value("flaga").toBool();
         bFlags = qsetConfig->value("flags").toBool();
         bFlagi0 = qsetConfig->value("flagi0").toBool();
@@ -96,6 +100,8 @@ struct iozoneParamStruct * iozoneParamWidget::getParamData(int type)
     struct iozoneParamStruct *res = new iozoneParamStruct;
     res->iFileSize = iFileSize;
     res->iTestTimes = iTestTimes;
+    res->bFlagMkfs = bFlagMkfs;
+    res->bFlagMnt = bFlagMnt;
     res->bFlaga = bFlaga;
     res->bFlags = bFlags;
     res->bFlagi0 = bFlagi0;

@@ -37,14 +37,16 @@ void iozoneThread::run()
     for( ; i<DEFAULT_ARGV; ++i)
         argv[i] = new char[DEFAULT_ARG_CHAR];
 
-    /* 挂载文件系统 *//*
     QString lineMount = "mount";
     QStringList args;
-    args.append("-t");
-    args.append(param->qsFsType);
-    args.append(param->qsDevDir);
-    args.append(param->qsMntDir);
-    QProcess::execute(lineMount, args);*/
+    if ( param->bFlagMnt == true )
+    {   /* 挂载文件系统 */
+        args.append("-t");
+        args.append(param->qsFsType);
+        args.append(param->qsDevDir);
+        args.append(param->qsMntDir);
+        QProcess::execute(lineMount, args);
+    }
 
     //获取系统时间并设置显示格式
     QDateTime currentDateTime = QDateTime::currentDateTime();
@@ -162,11 +164,13 @@ void iozoneThread::run()
             qDebug()<<"shmdt failed"<<endl;
             exit(EXIT_FAILURE);
         }
-        /* 取消挂载 *//*
-        lineMount = "umount";
-        args.clear();
-        args.append(param->qsMntDir);
-        QProcess::execute(lineMount, args);*/
+        if ( param->bFlagMnt == true )
+        {   /* 取消挂载 */
+            lineMount = "umount";
+            args.clear();
+            args.append(param->qsMntDir);
+            QProcess::execute(lineMount, args);
+        }
         /* 测试结束 */
         *(param->pbFlagRun) = false;
 

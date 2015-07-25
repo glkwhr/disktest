@@ -53,6 +53,7 @@ private:
     QTableWidget *tableIozoneLog;
     QCheckBox *chkFlagIozoneLog;
     QProgressBar *progressBar;
+    QLabel *labelStatus;
     QComboBox *cboRateType;
     bool bFlagIozoneLog; //设置是否显示log窗口
     int iCurFsType; /* 当前测试文件系统类型 */

@@ -9,6 +9,8 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     iCurFsType = 0;
 
     /* progress bar */
+    labelStatus = new QLabel();
+    labelStatus->setVisible(false);
     progressBar = new QProgressBar();
     progressBar->setRange(0, 100);
     progressBar->setValue(0);
@@ -63,13 +65,14 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     gridlayoutUp->addWidget(btnStartRamfs, 0, 1);
     gridlayoutUp->addWidget(btnStartObfs, 0, 2);
     gridlayoutUp->addWidget(btnStartPmfs, 0, 3);
-    gridlayoutMain->addLayout(gridlayoutUp, 0, 0);
+    gridlayoutMain->addLayout(gridlayoutUp, 0, 0, 1, 2);
     //QSpacerItem *vSpacer0 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    gridlayoutMain->addWidget(cboRateType, 1, 0);
-    gridlayoutMain->addWidget(chartFrame, 2, 0);
-    gridlayoutMain->addWidget(chkFlagIozoneLog, 3, 0);
-    gridlayoutMain->addWidget(tableIozoneLog, 4, 0);
-    gridlayoutMain->addWidget(progressBar, 5, 0);
+    gridlayoutMain->addWidget(cboRateType, 1, 0, 1, 2);
+    gridlayoutMain->addWidget(chartFrame, 2, 0, 1, 2);
+    gridlayoutMain->addWidget(chkFlagIozoneLog, 3, 0, 1, 2);
+    gridlayoutMain->addWidget(tableIozoneLog, 4, 0, 1, 2);
+    gridlayoutMain->addWidget(labelStatus, 5, 0);
+    gridlayoutMain->addWidget(progressBar, 5, 1);
 
     this->setLayout(gridlayoutMain);
 }
@@ -84,8 +87,9 @@ void iozoneWidget::onStartRamfs()
     paramWidget->setRunFlag(true);/* 测试开始 */
     /* 进度条置零并显示 */
     progressBar->setValue(0);
-    progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
+    //progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
     progressBar->setVisible(true);
+    labelStatus->setVisible(true);
     /* 设置当前测试文件系统类型 */
     iCurFsType = FILESYS_TYPE_RAMFS;
     /* 清空表格 */
@@ -108,8 +112,9 @@ void iozoneWidget::onStartObfs()
     paramWidget->setRunFlag(true);/* 测试开始 */
     /* 进度条置零并显示 */
     progressBar->setValue(0);
-    progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
+    //progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
     progressBar->setVisible(true);
+    labelStatus->setVisible(true);
     /* 设置当前测试文件系统类型 */
     iCurFsType = FILESYS_TYPE_OBFS;
     /* 清空表格 */
@@ -117,16 +122,32 @@ void iozoneWidget::onStartObfs()
     tableIozoneLog->setRowCount(0);
     struct iozoneParamStruct * p = paramWidget->getParamData(FILESYS_TYPE_OBFS);
     iozoneThread *iozonethread = new iozoneThread(p, this);
-    //connect(iozonethread, SIGNAL(finished()), chartView, SLOT(update()));/* 子线程结束时更新chart */
     connect(iozonethread, SIGNAL(finished()), iozonethread, SLOT(deleteLater()));
     iozonethread->start();
 }
 
 void iozoneWidget::onStartPmfs()
 {
-    //struct iozoneParamStruct * p = paramWidget->getParamData();
-    //iozoneThread * iozonethread = new iozoneThread(p);
-    //iozonethread->start();
+    if(paramWidget->getRunFlag()){
+        /* 若正在进行测试则不作反应 */
+        //qDebug()<<"running"<<endl;
+        return;
+    }
+    paramWidget->setRunFlag(true);/* 测试开始 */
+    /* 进度条置零并显示 */
+    progressBar->setValue(0);
+    //progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
+    progressBar->setVisible(true);
+    labelStatus->setVisible(true);
+    /* 设置当前测试文件系统类型 */
+    iCurFsType = FILESYS_TYPE_PMFS;
+    /* 清空表格 */
+    tableIozoneLog->clearContents();
+    tableIozoneLog->setRowCount(0);
+    struct iozoneParamStruct * p = paramWidget->getParamData(FILESYS_TYPE_PMFS);
+    iozoneThread *iozonethread = new iozoneThread(p, this);
+    connect(iozonethread, SIGNAL(finished()), iozonethread, SLOT(deleteLater()));
+    iozonethread->start();
 }
 
 void iozoneWidget::myEventHandle(QEvent *e)
@@ -157,6 +178,7 @@ void iozoneWidget::myEventHandle(QEvent *e)
         /*改变进度条值*/
         progressBar->setValue(iRowCount*100/paramWidget->getTotalTimes());
     }
+    labelStatus->setText( QString("%1/%2").arg(siCurTimes+1).arg(paramWidget->getTestTimes() ) );
     unsigned long long tmpRate;
     switch( ioze->iType ){
 
@@ -265,6 +287,8 @@ void iozoneWidget::myEventHandle(QEvent *e)
             {   /* 多轮测试都已结束 */
                 siCurTimes = 0;
                 progressBar->setVisible(false);
+                labelStatus->setText("");
+                labelStatus->setVisible(false);
                 //qDebug()<<"ok";
             }
             else
