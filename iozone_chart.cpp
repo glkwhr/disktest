@@ -10,7 +10,7 @@ iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     QGridLayout *gridlayout = new QGridLayout(frame);
     gridlayout->addWidget(this, 0, 0);
     gridlayout->setMargin(0);
-    // prepare x axis with country labels:
+    // prepare x axis with labels:
     for ( int i=1; i<=13; ++i ){
         ticks << i;
     }
@@ -24,7 +24,8 @@ iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     this->xAxis->setTickLength(0, 4);
     this->xAxis->grid()->setVisible(true);
     this->xAxis->setRange(0, 14);
-    //this->xAxis->setLabel("Reclen (kB)");
+    this->xAxis->setLabel("Reclen (kB)");
+    this->xAxis->setPadding(5);
 
     // prepare y axis:
     /* y axis的范围取决于ratetype(column) 缺省给出最小范围 */
