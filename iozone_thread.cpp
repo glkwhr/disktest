@@ -37,14 +37,16 @@ void iozoneThread::run()
     for( ; i<DEFAULT_ARGV; ++i)
         argv[i] = new char[DEFAULT_ARG_CHAR];
 
-    /* 挂载文件系统 *//*
     QString lineMount = "mount";
     QStringList args;
-    args.append("-t");
-    args.append(param->qsFsType);
-    args.append(param->qsDevDir);
-    args.append(param->qsMntDir);
-    QProcess::execute(lineMount, args);*/
+    if ( param->bFlagMnt == true )
+    {   /* 挂载文件系统 */
+        args.append("-t");
+        args.append(param->qsFsType);
+        args.append(param->qsDevDir);
+        args.append(param->qsMntDir);
+        QProcess::execute(lineMount, args);
+    }
 
     //获取系统时间并设置显示格式
     QDateTime currentDateTime = QDateTime::currentDateTime();
@@ -92,6 +94,8 @@ void iozoneThread::run()
 
     iozoneThread *p = this;
     pid_t pid;
+    i = 0;
+    goFork:
     if((pid = fork())==0){
         /* 子进程 */
         /* 共享内存 */
@@ -122,6 +126,7 @@ void iozoneThread::run()
     }
     else if(pid>0){
         /* 父进程中 */
+        ++i;
         /* 共享内存 */
         shmid = shmget( ftok(".", 1), sizeof(struct shmNotify), 0666|IPC_CREAT);
         if(shmid == -1)
@@ -152,17 +157,20 @@ void iozoneThread::run()
             }
         }
         waitpid(pid, NULL, 0);/* 等待子进程 */
+        if ( i<param->iTestTimes ) goto goFork;
         /* 把共享内存从当前进程分离 */
         if(shmdt(pShmNotify) == -1)
         {
             qDebug()<<"shmdt failed"<<endl;
             exit(EXIT_FAILURE);
         }
-        /* 取消挂载 *//*
-        lineMount = "umount";
-        args.clear();
-        args.append(param->qsMntDir);
-        QProcess::execute(lineMount, args);*/
+        if ( param->bFlagMnt == true )
+        {   /* 取消挂载 */
+            lineMount = "umount";
+            args.clear();
+            args.append(param->qsMntDir);
+            QProcess::execute(lineMount, args);
+        }
         /* 测试结束 */
         *(param->pbFlagRun) = false;
 

@@ -6,7 +6,6 @@
 #include <QTableWidget>
 #include <QCheckBox>
 #include <QGridLayout>
-#include <QSpacerItem>
 #include <QLabel>
 #include <QProgressBar>
 
@@ -15,12 +14,24 @@
 #include "iozone_event.h"
 #include "iozone_chart.h"
 
+#ifndef FILESYS_TYPE
+#define FILESYS_TYPE
+
+#define FILESYS_TYPE_RAMFS 0
+#define FILESYS_TYPE_OBFS 1
+#define FILESYS_TYPE_PMFS 2
+
+#endif
+
+#ifndef OUTPUT_TYPE
+#define OUTPUT_TYPE
 #define OUTPUT_TYPE_WRITE 0
 #define OUTPUT_TYPE_REWRITE 1
 #define OUTPUT_TYPE_READ 2
 #define OUTPUT_TYPE_REREAD 3
 #define OUTPUT_TYPE_RANDREAD 4
 #define OUTPUT_TYPE_RANDWRITE 5
+#endif
 
 class iozoneWidget : public QWidget
 {
@@ -29,6 +40,7 @@ public slots:
     void onStartRamfs();
     void onStartObfs();
     void onStartPmfs();
+    //void onRateTypeChanged(const int);
 
 public:
     iozoneWidget(QWidget * parent);
@@ -41,9 +53,13 @@ private:
     QTableWidget *tableIozoneLog;
     QCheckBox *chkFlagIozoneLog;
     QProgressBar *progressBar;
+    QLabel *labelStatus;
+    QComboBox *cboRateType;
     bool bFlagIozoneLog; //设置是否显示log窗口
+    int iCurFsType; /* 当前测试文件系统类型 */
 
-    iozoneChart *chartWidget;/* 图表部件 */
+    iozoneChart *chartView;/* 图表部件 */
+    iozoneRateModel *rateModel;/* 数据模型 */
 
     iozoneParamWidget * paramWidget; /* 各种变量信息的获取 */
 };
