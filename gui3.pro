@@ -29,6 +29,7 @@ SOURCES += main.cpp\
     iozone_thread.cpp \
     qcustomplot.cpp \
     iozone_chart.cpp \
+    postmark_chart.cpp \
     iozone_rate_model.cpp
 
 
@@ -44,6 +45,7 @@ HEADERS  += mainwindow.h \
     iozone_thread.h \
     qcustomplot.h \
     iozone_chart.h \
+    postmark_chart.h \
     iozone_rate_model.h
 
 

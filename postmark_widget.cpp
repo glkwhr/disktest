@@ -24,10 +24,26 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     button->setText(tr("Begin postmark Test"));
     connect(button, SIGNAL(clicked()), this, SLOT(buttonclicked()));
 
-    table = new QTableWidget(FS_NUM, 6, this);
 
-    customPlot = new QCustomPlot(this);
-    customPlot->setFixedHeight(200);
+
+    showtable = new QCheckBox("Log", this);
+    showtable->setChecked(false);
+    table = new QTableWidget(FS_NUM, 6, this);
+    table->setVisible(false);
+    connect(showtable, SIGNAL(toggled(bool)), table, SLOT(setVisible(bool)));
+
+
+
+    chart1 = new postmarkChart(0, table, this);
+    chart1->setFixedHeight(300);
+
+    chart2 = new postmarkChart(1, table, this);
+    chart2->setFixedHeight(300);
+
+    QTabWidget * tabwidget = new QTabWidget(this);
+    tabwidget->addTab(chart1, "files");
+    tabwidget->addTab(chart2, "bytes");
+
 
     QStringList header;
     header << "Create" << "Read" << "Appended" << "Delete" << "Read(data)" << "Write data";
@@ -35,17 +51,12 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
 
 
-
-
-    //paintwidget = new PaintedWidget(this);
-
     parambutton = new QPushButton(this);
     parambutton->setText("<<< Details setting");
     connect(parambutton, SIGNAL(clicked()), this, SLOT(parambuttonclicked()));
 
     paramWidget = new postmarkParamWidget(this);
     paramWidget->setVisible(false);
-
 
     QHBoxLayout *selectfslayout = new QHBoxLayout;
     for (int i = 0; i < FS_NUM; ++i)
@@ -59,35 +70,53 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
     fslabel = new QLabel(this);
     fslabel->setText("");
+    fslabel->setVisible(false);
 
     pgsbar = new QProgressBar(this);
     pgsbar->setVisible(false);
     pgslabel = new QLabel(this);
     pgslabel->setText("");
+    pgslabel->setVisible(false);
 
     QGridLayout * gridlayout = new QGridLayout;
     gridlayout->addWidget(button, 1, 1);
-    gridlayout->addWidget(customPlot, 3, 1, 1, 2);
-    gridlayout->addWidget(table, 4, 1, 1, 2);
-    //gridlayout->addWidget(paintwidget, 1, 1);
+
+    //QHBoxLayout *chartlayout = new QHBoxLayout();
+    //chartlayout->addWidget(chart1);
+    //chartlayout->addWidget(chart2);
+
+    //gridlayout->addLayout(chartlayout, 3, 1, 1, 2);
+    gridlayout->addWidget(tabwidget, 3, 1, 1, 2);
+
+    gridlayout->addWidget(showtable, 4, 1, 1, 1);
+    gridlayout->addWidget(table, 5, 1, 1, 2);
 
 
     gridlayout->addWidget(parambutton, 0, 1);
-    gridlayout->addWidget(paramWidget, 0, 0, 5, 1);
+    //gridlayout->addWidget(paramWidget, 0, 0, 7, 1);
 
     gridlayout->addLayout(selectfslayout, 0, 2);
 
 
-    gridlayout->addWidget(fslabel, 5, 1, 1, 2);
-    gridlayout->addWidget(pgslabel, 6, 1);
-    gridlayout->addWidget(pgsbar, 6, 2);
+    gridlayout->addWidget(fslabel, 6, 1);
+    gridlayout->addWidget(pgslabel, 6, 2);
+    gridlayout->addWidget(pgsbar, 7, 1, 1, 2);
 
-    this->setLayout(gridlayout);
+    QGridLayout *layout = new QGridLayout;
+    layout->addWidget(paramWidget, 0, 0);
+    layout->addLayout(gridlayout, 0, 1);
+
+    this->setLayout(layout);
 }
 
 //按钮按下的槽函数
 void postmarkWidget::buttonclicked()
 {
+
+    chart1->clearItems();
+    chart2->clearItems();
+
+
     table->setRowCount(0);
     table->setRowCount(FS_NUM);
     QStringList header;
@@ -109,13 +138,11 @@ void postmarkWidget::buttonclicked()
         }
     }
 
+    fslabel->setVisible(true);
+    pgslabel->setVisible(true);
 
 
     postmarkThread * postmarkthread = new postmarkThread(pgsbar, whichfs, p, this->fslabel);
-
-    //显示进度条
-
-
     //开始postmark测试线程
     postmarkthread->start();
 
@@ -138,13 +165,13 @@ char *scalef(float i, char *buffer)
 {
 
 
-   if (i/(float)MEGABYTE>1)
+   //if (i/(float)MEGABYTE>1)
       sprintf(buffer,"%.2f megabytes",i/(float)MEGABYTE);
-   else
+   /*else
       if (i/(float)KILOBYTE)
          sprintf(buffer,"%.2f kilobytes",i/(float)KILOBYTE);
       else
-         sprintf(buffer,"%f bytes",i);
+         sprintf(buffer,"%f bytes",i);*/
 
    return (buffer);
 }
@@ -209,8 +236,11 @@ void postmarkWidget::myEventHandle(QEvent *e)
         case 4:
             if (pe->nowfs == FS_NUM - 1)
             {
+                fslabel->setVisible(false);
+                pgslabel->setVisible(false);
                 // all data has been received
-                displayBarGraph();
+                chart1->update();
+                chart2->update();
             }
 
         }
@@ -237,36 +267,3 @@ void postmarkWidget::myEventHandle(QEvent *e)
 
     e->accept();
 }
-
-void postmarkWidget::displayBarGraph()
-{
-    int color[10][4] = {{0, 0, 255, 50},
-                        {180, 0, 120, 50},
-                        {255, 154, 0, 50},
-                        {0, 255, 0, 50},
-                        {255, 0, 0, 50}
-                       };
-    QCPBarsGroup *bargroup = new QCPBarsGroup(customPlot);
-
-    QVector<double> datax = QVector<double>() << 1 << 2 << 3 << 4 << 5 << 6;
-
-
-    for (int i = 0; i < FS_NUM; ++i)
-    {
-        QVector<double> datay = QVector<double>();
-        for (int j = 0; j < 6; ++j)
-        {
-            datay << table->item(i, j)->text().toDouble();
-        }
-
-        QCPBars *bars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
-        customPlot->addPlottable(bars);
-        bars->setData(datax, datay);
-        bars->setBrush(QColor(0, 0, 255, 50));
-        bars->setPen(QColor(0, 0, 255));
-        bars->setWidth(0.15);
-        bars->setBarsGroup(bargroup);
-    }
-
-}
-

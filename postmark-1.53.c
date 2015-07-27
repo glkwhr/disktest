@@ -1052,7 +1052,7 @@ char *param; /* unused */
    }
    printf("Done\n");
 
-    notifyGUI_2_int(global_now, 4, 0, 0, 0);
+
 
    /* print end time and difference, transaction numbers */
    time(&end_time);
@@ -1090,6 +1090,8 @@ char *param; /* unused */
    free(file_table);
    free(read_buffer);
    free(file_source);
+
+
 
    return(1); /* return 1 unless exit requested, then return 0 */
 }
