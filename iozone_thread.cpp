@@ -18,19 +18,21 @@ extern "C" void callNotify(iozoneThread* p, int type, long long kb, long long re
 
 void iozoneThread::threadNotifyGUI(iozoneThread *p, int type, long long kb, long long reclen, unsigned long long speed){
     /* 子进程中调用,用来与父进程通信 */
-    while(pShmNotify->notifyFlag == 1);/* 等待父进程处理之前的请求 */
-    if(pShmNotify->notifyFlag == 0)
-    {   /* 之前请求已处理 */
-        pShmNotify->type = type;
-        pShmNotify->kb = kb;
-        pShmNotify->reclen = reclen;
-        pShmNotify->speed = speed;
-        pShmNotify->notifyFlag = 1; /* "通知"父进程 */
-    }
+    waitFlag->acquire();/* 若父进程等待 */
+     /* 之前请求已处理 */
+    pShmNotify->type = type;
+    pShmNotify->kb = kb;
+    pShmNotify->reclen = reclen;
+    pShmNotify->speed = speed;
+    pShmNotify->notifyFlag = 1; /* "通知"父进程 */
+    callFlag->release();/* 子进程已通知 */
 }
 
 void iozoneThread::run()
 {
+    callFlag = new QSystemSemaphore("notify", 0, QSystemSemaphore::Create);
+    waitFlag = new QSystemSemaphore("wait", 1, QSystemSemaphore::Create);
+    shm = NULL;
     int argc = DEFAULT_ARGC;
     int i = 0;
     char *argv[DEFAULT_ARGV];
@@ -80,17 +82,7 @@ void iozoneThread::run()
     strcpy(argv[i], param->qsFileName.toStdString().c_str() );
     strcat(argv[i++], tagDateTime.toStdString().c_str());
 
-    /*
-    strcpy(argv[i++], "-Rb");
-    strcpy(argv[i], "res");
-    strcat(argv[i], tagDateTime.toStdString().c_str());
-    strcat(argv[i++], ".xls");
-    */
     argc = i;
-
-    /*调用iozone主函数*/
-    //while(i-->0) qDebug() << argv[i]; qDebug() << endl;
-    //iozoneMain(this, argc, argv);
 
     iozoneThread *p = this;
     pid_t pid;
@@ -98,6 +90,8 @@ void iozoneThread::run()
     goFork:
     if((pid = fork())==0){
         /* 子进程 */
+        callFlag = new QSystemSemaphore("notify", 0, QSystemSemaphore::Open);
+        waitFlag = new QSystemSemaphore("wait", 1, QSystemSemaphore::Open);
         /* 共享内存 */
         shmid = shmget( ftok(".", 1), sizeof(struct shmNotify), 0666|IPC_CREAT);
         if(shmid == -1)
@@ -109,13 +103,17 @@ void iozoneThread::run()
         {
             exit(EXIT_FAILURE);
         }
-        qDebug()<<"Memory attached at "<<shm<<endl;
+        qDebug()<<"Child Memory attached at "<<shm<<endl;
         pShmNotify = (struct shmNotify*)shm;
-        if(pShmNotify->notifyFlag != 0)
-            pShmNotify->notifyFlag = 0;
+        pShmNotify->notifyFlag = 0;
+
         iozoneMain(p, argc, argv);
-        while(pShmNotify->notifyFlag == 1);/* 等待父进程处理完毕 */
+
+        waitFlag->acquire();/* 若父进程等待 */
+        //while(pShmNotify->notifyFlag == 1);/* 等待父进程处理完毕 */
         pShmNotify->notifyFlag = -1;/* 结束标志 */
+        callFlag->release();/* 子进程已发出通知 */
+
         /* 把共享内存从当前进程中分离 */
         if(shmdt(pShmNotify) == -1)
         {
@@ -123,6 +121,7 @@ void iozoneThread::run()
             exit(EXIT_FAILURE);
         }
         exit();
+        /*-----子进程结束-----*/
     }
     else if(pid>0){
         /* 父进程中 */
@@ -138,31 +137,39 @@ void iozoneThread::run()
         {
             exit(EXIT_FAILURE);
         }
-        qDebug()<<"Memory attached at "<<shm<<endl;
+        qDebug()<<"Father Memory attached at "<<shm<<endl;
         pShmNotify = (struct shmNotify*)shm;
-        if(pShmNotify->notifyFlag != 0&&(pShmNotify->notifyFlag!=1))
-            pShmNotify->notifyFlag = 0;
         while(1)
         {
+            callFlag->acquire();/* 若子进程已发出通知 */
             if(pShmNotify->notifyFlag == 1)
             {
                 notifyGUI(pShmNotify->type, pShmNotify->kb, pShmNotify->reclen, pShmNotify->speed);
                 pShmNotify->notifyFlag = 0;
+                waitFlag->release();/* 父进程等待 */
                 continue;
             }
             else if(pShmNotify->notifyFlag == -1)
             {
                 pShmNotify->notifyFlag = 0;
+                waitFlag->release();/* 父进程等待 */
                 break;
             }
         }
         waitpid(pid, NULL, 0);/* 等待子进程 */
-        if ( i < param->iTestTimes ) goto goFork;
         /* 把共享内存从当前进程分离 */
         if(shmdt(pShmNotify) == -1)
         {
             qDebug()<<"shmdt failed"<<endl;
             exit(EXIT_FAILURE);
+        }
+        delete callFlag;
+        delete waitFlag;
+        if ( i < param->iTestTimes )
+        {   /* 下次fork之前恢复初始状态 否则会出错 */
+            callFlag = new QSystemSemaphore("notify", 0, QSystemSemaphore::Create);
+            waitFlag = new QSystemSemaphore("wait", 1, QSystemSemaphore::Create);
+            goto goFork;
         }
         if ( param->bFlagMnt == true )
         {   /* 取消挂载 */
@@ -182,7 +189,6 @@ void iozoneThread::run()
         delete this->param;/* 在点击start按钮时getparam()中new的 */
         this->quit();
     }
-    //this->deleteLater();
 }
 
 

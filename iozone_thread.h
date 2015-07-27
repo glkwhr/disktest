@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QProcess>
 #include <QDateTime>
+#include <QSystemSemaphore>
+//#include <QSharedMemory>
 
 #include "iozone_paramwidget.h"
 
@@ -41,7 +43,10 @@ public:
     void threadNotifyGUI(iozoneThread *, int type, long long kb, long long reclen, unsigned long long speed);
     void callThread(int type, long long kb, long long reclen, unsigned long long speed);
 
-    void *shm = NULL;
+private:
+    QSystemSemaphore *callFlag;
+    QSystemSemaphore *waitFlag;
+    void *shm;
     int shmid;
     struct shmNotify *pShmNotify;
 };
