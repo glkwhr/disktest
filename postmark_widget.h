@@ -10,32 +10,48 @@
 #include <QProgressBar>
 #include <QLabel>
 
+#include <QTableWidget>
+
 #include "paintedwidget.h"
+
+#include "postmark_thread.h"
 
 #include "postmark_paramwidget.h"
 
+#include "postmark_chart.h"
 
 class postmarkWidget : public QWidget
 {
     Q_OBJECT
-public:
+public slots:
     void buttonclicked();
+    void parambuttonclicked();
 
+public:
     void myEventHandle(QEvent * e);
 
     postmarkWidget(QWidget * parent);
 
+
 private:
-    QString *qstring_textEdit1;
+    QCheckBox * selectfs[FS_NUM];
+
+
+
     QPushButton *button;
-    QTextEdit *textEdit1;
 
-    
-    PaintedWidget *paintwidget;
+    QCheckBox *showtable;
+    QTableWidget *table;
+
+    postmarkChart *chart1;
+    postmarkChart *chart2;
 
 
 
+    QPushButton *parambutton;
     postmarkParamWidget * paramWidget;
+
+    QLabel * fslabel;
 
     QLabel *pgslabel;
     QProgressBar * pgsbar;

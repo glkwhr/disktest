@@ -1,12 +1,14 @@
 #include "iozone_event.h"
 
-iozoneEvent::iozoneEvent():QEvent(iozoneEvent::iozoneEventType)
+ioZoneEvent::ioZoneEvent():QEvent(ioZoneEvent::ioZoneEventType)
 {
-
 }
 
-iozoneEvent::iozoneEvent(int t, long long k, long long r, unsigned long long s):
-    QEvent(iozoneEvent::iozoneEventType), type(t), kb(k), reclen(r), speed(s)
+ioZoneEvent::ioZoneEvent(int it, long long lls, long long llr, unsigned long long ullrate ):
+    QEvent(ioZoneEvent::ioZoneEventType)
 {
-
+    iType = it;
+    llSize = lls;
+    llRecLen = llr;
+    ullRate = ullrate;
 }

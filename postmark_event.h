@@ -7,9 +7,10 @@ class postmarkEvent : public QEvent
 {
 public:
     static const QEvent::Type postmarkEventType;
-    postmarkEvent(int isprogress, int type, int total, int persecond);
-    postmarkEvent(int isprogress, int type, float totalf, float persecondf);
+    postmarkEvent(int now, int isprogress, int type, int total, int persecond);
+    postmarkEvent(int now, int isprogress, int type, float totalf, float persecondf);
 
+    int nowfs;
     int isprogress; //0 not progress  1 creating 2 transactioning 3 deleting
     int type;   /*
                     0  seconds total

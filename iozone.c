@@ -102,7 +102,7 @@ extern  int h_errno; /* imported for errors */
 int atoi();
 int close();
 int unlink();
-int iozone_main();
+int iozoneMain();
 void record_command_line();
 #if !defined(linux)
 int wait();
@@ -816,7 +816,7 @@ struct master_neutral_command {
 /* At 16 Meg switch to large records */
 #define CROSSOVER (16*1024)		
 /* Maximum buffer size*/
-#define MAXBUFFERSIZE (16*1024*1024)		
+#define MAXBUFFERSIZE (16*1024*1024)
 #endif
 
 /* Maximum number of children. Threads/procs/clients */
@@ -1612,12 +1612,18 @@ void cleanup_children();
 /*								*/
 /****************************************************************/
 
-extern void notifyGUI(int type, long long kb, long long reclen, unsigned long long speed);
+//void notifyGUI(int type, long long kb, long long reclen, unsigned long long speed);
+
+//void callNotify(int type, long long kb, long long reclen, unsigned long long speed);
+
+struct iozoneThread* p;
+void callNotify(struct iozoneThread* p, int type, long long kb, long long reclen, unsigned long long speed);
 
 int
-iozone_main(int argc,char *argv[32])
+iozoneMain(struct iozoneThread* tmp, int argc,char *argv[32])
 {
-
+    //pthreadNotifyGUI = tmp;
+    p = tmp;
 
 
 	long long fileindx,i,tval;
@@ -1703,6 +1709,8 @@ iozone_main(int argc,char *argv[32])
         /********************************************************/
 
      	buffer = (char *) alloc_mem((long long)(MAXBUFFERSIZE + (2 * cache_size)),(int)0);
+        /* freetest */
+        //char* freetmp1 = buffer;
 	if(buffer == 0) {
         	perror("Memory allocation failed:");
         	exit(1);
@@ -1719,6 +1727,8 @@ iozone_main(int argc,char *argv[32])
 
 	/* de-dup input buf */
      	buffer1 = (char *) alloc_mem((long long)(MAXBUFFERSIZE + (2 * cache_size)),(int)0);
+        /* freetest */
+        //char* freetmp2 = buffer1;
 	if(buffer1 == 0) {
         	perror("Memory allocation failed:");
         	exit(1);
@@ -1968,8 +1978,10 @@ iozone_main(int argc,char *argv[32])
 		case 'm':	/* Use multiple buffers */
 			fetchon=0;
 			multi_buffer=1;
-			mflag++;
+            mflag++;
      			mbuffer = (char *) alloc_mem((long long)MAXBUFFERSIZE,(int)0);
+                /* freetest */
+                //char* freetmp3 = mbuffer;
 			if(mbuffer == 0) {
                         	perror("Memory allocation failed:");
                           	exit(8);
@@ -3162,6 +3174,12 @@ out:
 	if(Rflag && !trflag){
 		dump_excel();
 	}
+
+    /* freetest */
+    //free(freetmp1);
+    //free(freetmp2);
+    //free(freetmp3);
+    //printf("iozonemain finished\n");
 	return(0);	
 }
 
@@ -7892,12 +7910,12 @@ long long *data2;
     if(!silent)
     {
         printf("%9lld",writerate[0]);
-        notifyGUI(0, kilo64, reclen/1024, writerate[0]);
+        callNotify(p, 0, kilo64, reclen/1024, writerate[0]);
     }
     if(!silent)
     {
         printf("%9lld",writerate[1]);
-        notifyGUI(1, kilo64, reclen/1024, writerate[1]);
+        callNotify(p, 1, kilo64, reclen/1024, writerate[1]);
     }
 	if(!silent) fflush(stdout);
 #endif
@@ -8848,12 +8866,12 @@ long long *data1,*data2;
     if(!silent)
     {
         printf("%9lld",readrate[0]);
-        notifyGUI(2, kilo64, reclen/1024, readrate[0]);
+        callNotify(p, 2, kilo64, reclen/1024, readrate[0]);
     }
     if(!silent)
     {
         printf("%9lld",readrate[1]);
-        notifyGUI(3, kilo64, reclen/1024, readrate[1]);
+        callNotify(p, 3, kilo64, reclen/1024, readrate[1]);
     }
 	if(!silent) fflush(stdout);
 #endif
@@ -9392,12 +9410,12 @@ long long *data1, *data2;
     if(!silent)
     {
         printf("%9lld",randreadrate[0]);
-        notifyGUI(4, kilo64, reclen/1024, randreadrate[0]);
+        callNotify(p, 4, kilo64, reclen/1024, randreadrate[0]);
     }
     if(!silent)
     {
         printf("%9lld",randreadrate[1]);
-        notifyGUI(5, kilo64, reclen/1024, randreadrate[1]);
+        callNotify(p, 5, kilo64, reclen/1024, randreadrate[1]);
     }
 	if(!silent) fflush(stdout);
 #endif
