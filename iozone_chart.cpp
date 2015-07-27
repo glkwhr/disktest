@@ -87,15 +87,15 @@ void iozoneChart::update(void)
         {   /* 设置折线颜色和阴影颜色 */
         case FILESYS_TYPE_RAMFS:
             pen.setColor(QColor(150, 222, 0));
-            qvGraph[i]->setBrush(QColor(150, 222, 0, 50));
+            qvGraph[i]->setBrush(QColor(150, 222, 0, 10));
             break;
         case FILESYS_TYPE_OBFS:
             pen.setColor(QColor(222, 150, 0));
-            qvGraph[i]->setBrush(QColor(222, 150, 0, 50));
+            qvGraph[i]->setBrush(QColor(222, 150, 0, 10));
             break;
         case FILESYS_TYPE_PMFS:
             pen.setColor(QColor(150, 0, 222));
-            qvGraph[i]->setBrush(QColor(150, 0, 222, 50));
+            qvGraph[i]->setBrush(QColor(150, 0, 222, 10));
             break;
         }
 
