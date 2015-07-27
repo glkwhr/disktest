@@ -280,16 +280,15 @@ void iozoneWidget::myEventHandle(QEvent *e)
             /*单次进度条已满 由于randwrite一定是一次测试中最后的输出
             故将结束时的处理放在此处 但前提是进行测试的项目包括randr/w
             即参数需包括 "-i 2" */
-            chartView->update();
             progressBar->setValue(0);
             ++siCurTimes;
+            chartView->update();
             if ( siCurTimes == paramWidget->getTestTimes() )
             {   /* 多轮测试都已结束 */
                 siCurTimes = 0;
                 progressBar->setVisible(false);
                 labelStatus->setText("");
                 labelStatus->setVisible(false);
-                //qDebug()<<"ok";
             }
             else
             {

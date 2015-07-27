@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QProgressBar>
+#include <QComboBox>
 
 #include "iozone_paramwidget.h"
 #include "iozone_thread.h"
