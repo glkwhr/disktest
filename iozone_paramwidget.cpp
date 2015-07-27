@@ -72,6 +72,12 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
         qsObfsMntDir = qsetConfig->value("mnt").toString();
         qsObfsFsType = qsetConfig->value("fstype").toString();
     qsetConfig->endGroup();
+    qsetConfig->beginGroup("pmfs");
+        qsPmfsFileName = qsetConfig->value("filename").toString();
+        qsPmfsDevDir = qsetConfig->value("dev").toString();
+        qsPmfsMntDir = qsetConfig->value("mnt").toString();
+        qsPmfsFsType = qsetConfig->value("fstype").toString();
+    qsetConfig->endGroup();
 
     iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
     if(iTotalTimes > 13) iTotalTimes = 13;/* 用于进度条控制 */

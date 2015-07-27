@@ -157,7 +157,7 @@ void iozoneThread::run()
             }
         }
         waitpid(pid, NULL, 0);/* 等待子进程 */
-        if ( i<param->iTestTimes ) goto goFork;
+        if ( i < param->iTestTimes ) goto goFork;
         /* 把共享内存从当前进程分离 */
         if(shmdt(pShmNotify) == -1)
         {
