@@ -96,12 +96,12 @@ void iozoneThread::run()
         shmid = shmget( ftok(".", 1), sizeof(struct shmNotify), 0666|IPC_CREAT);
         if(shmid == -1)
         {
-            exit(EXIT_FAILURE);
+            _exit(EXIT_FAILURE);
         }
         shm = shmat(shmid, (void*)0, 0);
         if(shm == (void*)-1)
         {
-            exit(EXIT_FAILURE);
+            _exit(EXIT_FAILURE);
         }
         qDebug()<<"Child Memory attached at "<<shm<<endl;
         pShmNotify = (struct shmNotify*)shm;
@@ -118,9 +118,9 @@ void iozoneThread::run()
         if(shmdt(pShmNotify) == -1)
         {
             qDebug()<<"shmdt failed"<<endl;
-            exit(EXIT_FAILURE);
+            _exit(EXIT_FAILURE);
         }
-        exit();
+        _exit(0);
         /*-----子进程结束-----*/
     }
     else if(pid>0){
