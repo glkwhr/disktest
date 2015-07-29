@@ -86,17 +86,25 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
     btnConfigDir.setText(tr("..."));
 
     /* 文件大小选择 */
-    labelFileSize.setText(QString::number(iFileSize )+tr(" M"));
+    labelFileSize.setText(tr("File Size ")+QString::number(iFileSize )+tr(" M"));
     labelFileSize.setAlignment(Qt::AlignLeft);
     sliderFileSize.setOrientation(Qt::Horizontal);
     sliderFileSize.setRange(0, 4);/* 16 32 64 128 256 */
     sliderFileSize.setValue((int)log2((double)iFileSize)-4);/* 当前值转到slider上 */
     connect(&sliderFileSize, SIGNAL(valueChanged(int)), this, SLOT(onFileSizeChanged(int)));
+    /* 测试次数选择 */
+    labelTestTimes.setText(tr("Test Times "));
+    labelTestTimes.setAlignment(Qt::AlignLeft);
+    qsbTestTimes.setSingleStep(1);
+    qsbTestTimes.setRange(1,20);
+    qsbTestTimes.setValue(iTestTimes);
+    connect(&qsbTestTimes, SIGNAL(valueChanged(int)), this, SLOT(onTestTimesChanged(int)));
 
-    QGridLayout * gridlayout = new QGridLayout;
+    QGridLayout * gridlayout = new QGridLayout(this);
     gridlayout->addWidget(&labelFileSize, 0, 0);
     gridlayout->addWidget(&sliderFileSize, 0, 1);
-
+    gridlayout->addWidget(&labelTestTimes, 1, 0);
+    gridlayout->addWidget(&qsbTestTimes, 1, 1);
     this->setLayout(gridlayout);
 }
 
@@ -151,9 +159,13 @@ void iozoneParamWidget::onFileSizeChanged(int iSetFileSize)
         iFileSize *= 2;
     iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
     if(iTotalTimes>13) iTotalTimes = 13; /*用于之后的进度条操作*/
-    labelFileSize.setText(QString::number(iFileSize)+tr(" M"));
+    labelFileSize.setText(tr("File Size ")+QString::number(iFileSize)+tr(" M"));
 }
 
+void iozoneParamWidget::onTestTimesChanged(int iSetTestTimes)
+{
+    iTestTimes = iSetTestTimes;
+}
 
 /* 修改配置文件目录 */
 void iozoneParamWidget::onConfigDirClicked(void)
@@ -181,4 +193,9 @@ void iozoneParamWidget::onConfigDirClicked(void)
     } else {
             //QMessageBox::information(NULL, tr("Path"), tr("You didn't select any files."));
     }
+}
+
+void iozoneParamWidget::onTestEnded(void)
+{
+    bFlagRun = false;
 }

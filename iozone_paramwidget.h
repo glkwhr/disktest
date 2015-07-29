@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QSlider>
+#include <QSpinBox>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
@@ -16,6 +17,7 @@
 
 #ifndef FILESYS_TYPE
 #define FILESYS_TYPE
+#define FILESYS_COUNT 3
 #define FILESYS_TYPE_RAMFS 0
 #define FILESYS_TYPE_OBFS 1
 #define FILESYS_TYPE_PMFS 2
@@ -59,11 +61,15 @@ public:
 
 public slots:
     void onFileSizeChanged(int);
+    void onTestTimesChanged(int);
     void onConfigDirClicked(void);
+    void onTestEnded(void);
 
 private:
     QLabel labelFileSize;
+    QLabel labelTestTimes;
     QSlider sliderFileSize;
+    QSpinBox qsbTestTimes;
     QSettings *qsetConfig; /* 配置信息 */
     QLineEdit lineConfigDir;
     QPushButton btnConfigDir;
