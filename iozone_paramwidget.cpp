@@ -42,6 +42,12 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
             qsetConfig->setValue("mnt", "/pmfs");
             qsetConfig->setValue("fstype", "pmfs");
         qsetConfig->endGroup();
+        qsetConfig->beginGroup("ext4");
+            qsetConfig->setValue("filename", "/ext4/tmpfile");
+            qsetConfig->setValue("dev", "/dev/ext4");
+            qsetConfig->setValue("mnt", "/ext4");
+            qsetConfig->setValue("fstype", "ext4");
+        qsetConfig->endGroup();
     }
     else{
         /* 读取ini文件 */
@@ -78,6 +84,12 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
         qsPmfsMntDir = qsetConfig->value("mnt").toString();
         qsPmfsFsType = qsetConfig->value("fstype").toString();
     qsetConfig->endGroup();
+    qsetConfig->beginGroup("ext4");
+        qsExt4FileName = qsetConfig->value("filename").toString();
+        qsExt4DevDir = qsetConfig->value("dev").toString();
+        qsExt4MntDir = qsetConfig->value("mnt").toString();
+        qsExt4FsType = qsetConfig->value("fstype").toString();
+    qsetConfig->endGroup();
 
     iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
     if(iTotalTimes > 13) iTotalTimes = 13;/* 用于进度条控制 */
@@ -96,7 +108,7 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
     labelTestTimes.setText(tr("Test Times "));
     labelTestTimes.setAlignment(Qt::AlignLeft);
     qsbTestTimes.setSingleStep(1);
-    qsbTestTimes.setRange(1,20);
+    qsbTestTimes.setRange(1,100);
     qsbTestTimes.setValue(iTestTimes);
     connect(&qsbTestTimes, SIGNAL(valueChanged(int)), this, SLOT(onTestTimesChanged(int)));
 
@@ -105,6 +117,7 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
     gridlayout->addWidget(&sliderFileSize, 0, 1);
     gridlayout->addWidget(&labelTestTimes, 1, 0);
     gridlayout->addWidget(&qsbTestTimes, 1, 1);
+    gridlayout->setMargin(0);
     this->setLayout(gridlayout);
 }
 
@@ -140,6 +153,12 @@ struct iozoneParamStruct * iozoneParamWidget::getParamData(int type)
         res->qsDevDir = qsPmfsDevDir;
         res->qsMntDir = qsPmfsMntDir;
         res->qsFsType = qsPmfsFsType;
+        break;
+    case FILESYS_TYPE_EXT4:
+        res->qsFileName = qsExt4FileName;
+        res->qsDevDir = qsExt4DevDir;
+        res->qsMntDir = qsExt4MntDir;
+        res->qsFsType = qsExt4FsType;
         break;
     default:
         break;
