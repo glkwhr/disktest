@@ -8,6 +8,7 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
 {
     iFsToTest = 0x0;
     iCurFsType = 0;
+    bFlagShowConfig = false; /* 默认不显示设置 */
 
     /* progress bar */
     labelStatus = new QLabel();
@@ -18,27 +19,23 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     progressBar->setVisible(false);/* 进度条初始不可见 */
 
     /* checkboxs for fstype to test */
-    qslFsType << "RAMFS" << "OBFS" << "PMFS";
+    qslFsType << "RAMFS" << "OBFS" << "PMFS" << "EXT4";
     int i;
     for ( i = FILESYS_TYPE_RAMFS; i < FILESYS_COUNT; ++i )
     {
         chkFlagsFsToTest[i] = new QCheckBox(this);
         chkFlagsFsToTest[i]->setText(qslFsType[i]);
+        chkFlagsFsToTest[i]->setChecked(true);
     }
 
+    /* show config button */
+    btnShowConfig = new QPushButton(this);
+    btnShowConfig->setText(tr("Settings"));
+    connect(btnShowConfig, SIGNAL(clicked()), this, SLOT(onShowConfig()));
     /* start button */
     btnStartTest = new QPushButton(this);
     btnStartTest->setText(tr("Start"));
     connect(btnStartTest, SIGNAL(clicked()), this, SLOT(onStartTest()));
-
-
-    /*btnStartObfs = new QPushButton(this);
-    btnStartObfs->setText(tr("Start OBFS"));
-    connect(btnStartObfs, SIGNAL(clicked()), this, SLOT(onStartObfs()));
-
-    btnStartPmfs = new QPushButton(this);
-    btnStartPmfs->setText(tr("Start PMFS"));
-    connect(btnStartPmfs, SIGNAL(clicked()), this, SLOT(onStartPmfs()));*/
 
     paramWidget = new iozoneParamWidget(this);
 
@@ -69,26 +66,47 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     tableIozoneLog->setHorizontalHeaderLabels(header);
     tableIozoneLog->setVisible(chkFlagIozoneLog->isChecked());
     connect(chkFlagIozoneLog, SIGNAL(toggled(bool)), tableIozoneLog, SLOT(setVisible(bool)));
+    connect(chkFlagIozoneLog, SIGNAL(toggled(bool)), chartView, SLOT(setHidden(bool)));
 
-    QGridLayout *gridlayoutUp = new QGridLayout;
+    frameConfig = new QFrame;
+    frameConfig->setFrameShape(QFrame::Box);
+    frameConfig->setFrameShadow(QFrame::Sunken);
+    frameConfig->setVisible(bFlagShowConfig);
+    QGridLayout *gridlayoutUp = new QGridLayout(frameConfig);
     QGridLayout *gridlayoutMain = new QGridLayout;
-    gridlayoutUp->addWidget(paramWidget, 0, 0, 2, 1);
+    QGridLayout *gridlayoutBtn = new QGridLayout;
+    gridlayoutUp->addWidget(paramWidget, 0, 0, 2, 2);
     for ( i=1; i<=FILESYS_COUNT; ++i )
     {
-        gridlayoutUp->addWidget(chkFlagsFsToTest[i-1], 0, i);
+        gridlayoutUp->addWidget(chkFlagsFsToTest[i-1], 0, i+1);
     }
-    gridlayoutUp->addWidget(btnStartTest, 1, i-1);
+    QSpacerItem *hSpacer0 = new QSpacerItem(20, 1, QSizePolicy::Expanding, QSizePolicy::Maximum);
+    gridlayoutUp->addItem(hSpacer0, 0, i+1);
 
-    gridlayoutMain->addLayout(gridlayoutUp, 0, 0, 1, 2);
-    gridlayoutMain->addWidget(cboRateType, 1, 0, 1, 2);
-    gridlayoutMain->addWidget(chartFrame, 2, 0, 1, 2);
-    gridlayoutMain->addWidget(chkFlagIozoneLog, 3, 0, 1, 2);
-    gridlayoutMain->addWidget(tableIozoneLog, 4, 0, 1, 2);
-    gridlayoutMain->addWidget(labelStatus, 5, 0);
-    gridlayoutMain->addWidget(progressBar, 5, 1);
-    //QSpacerItem *vSpacer0 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    gridlayoutBtn->addWidget(btnShowConfig, 0, 0);
+    gridlayoutBtn->addWidget(btnStartTest, 0, 1);
+    QSpacerItem *hSpacer = new QSpacerItem(20, 5, QSizePolicy::Expanding, QSizePolicy::Maximum);
+    gridlayoutBtn->addItem(hSpacer, 0, 2);
+    gridlayoutBtn->setMargin(0);
+
+    gridlayoutMain->addLayout(gridlayoutBtn, 0, 0, 1, 2);
+    gridlayoutMain->addWidget(frameConfig, 1, 0, 1, 2);
+    gridlayoutMain->addWidget(cboRateType, 2, 0, 1, 2);
+    gridlayoutMain->addWidget(chartFrame, 3, 0, 1, 2);
+    QSpacerItem *vSpacer = new QSpacerItem(1, 5, QSizePolicy::Maximum, QSizePolicy::Expanding);
+    gridlayoutMain->addItem(vSpacer, 3, 2);
+    gridlayoutMain->addWidget(chkFlagIozoneLog, 4, 0, 1, 2);
+    gridlayoutMain->addWidget(tableIozoneLog, 5, 0, 1, 2);
+    gridlayoutMain->addWidget(labelStatus, 6, 0);
+    gridlayoutMain->addWidget(progressBar, 6, 1);
 
     this->setLayout(gridlayoutMain);
+}
+
+void iozoneWidget::onShowConfig()
+{
+    bFlagShowConfig = !bFlagShowConfig;
+    frameConfig->setVisible(bFlagShowConfig);
 }
 
 void iozoneWidget::onStartTest()
