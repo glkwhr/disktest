@@ -35,10 +35,10 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
 
 
     chart1 = new postmarkChart(0, table, this);
-    chart1->setFixedHeight(300);
+
 
     chart2 = new postmarkChart(1, table, this);
-    chart2->setFixedHeight(300);
+
 
     QTabWidget * tabwidget = new QTabWidget(this);
     tabwidget->addTab(chart1, "Files");
