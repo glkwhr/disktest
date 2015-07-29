@@ -6,6 +6,7 @@
 /* 包括三个启动按钮 负责线程的创建和传参 */
 iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
 {
+    iFsToTest = 0x0;
     iCurFsType = 0;
 
     /* progress bar */
@@ -16,18 +17,28 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
     progressBar->setValue(0);
     progressBar->setVisible(false);/* 进度条初始不可见 */
 
-    /* start buttons */
-    btnStartRamfs = new QPushButton(this);
-    btnStartRamfs->setText(tr("Start RAMFS"));
-    connect(btnStartRamfs, SIGNAL(clicked()), this, SLOT(onStartRamfs()));
+    /* checkboxs for fstype to test */
+    qslFsType << "RAMFS" << "OBFS" << "PMFS";
+    int i;
+    for ( i = FILESYS_TYPE_RAMFS; i < FILESYS_COUNT; ++i )
+    {
+        chkFlagsFsToTest[i] = new QCheckBox(this);
+        chkFlagsFsToTest[i]->setText(qslFsType[i]);
+    }
 
-    btnStartObfs = new QPushButton(this);
+    /* start button */
+    btnStartTest = new QPushButton(this);
+    btnStartTest->setText(tr("Start"));
+    connect(btnStartTest, SIGNAL(clicked()), this, SLOT(onStartTest()));
+
+
+    /*btnStartObfs = new QPushButton(this);
     btnStartObfs->setText(tr("Start OBFS"));
     connect(btnStartObfs, SIGNAL(clicked()), this, SLOT(onStartObfs()));
 
     btnStartPmfs = new QPushButton(this);
     btnStartPmfs->setText(tr("Start PMFS"));
-    connect(btnStartPmfs, SIGNAL(clicked()), this, SLOT(onStartPmfs()));
+    connect(btnStartPmfs, SIGNAL(clicked()), this, SLOT(onStartPmfs()));*/
 
     paramWidget = new iozoneParamWidget(this);
 
@@ -61,91 +72,104 @@ iozoneWidget::iozoneWidget(QWidget * parent):QWidget(parent)
 
     QGridLayout *gridlayoutUp = new QGridLayout;
     QGridLayout *gridlayoutMain = new QGridLayout;
-    gridlayoutUp->addWidget(paramWidget, 0, 0);
-    gridlayoutUp->addWidget(btnStartRamfs, 0, 1);
-    gridlayoutUp->addWidget(btnStartObfs, 0, 2);
-    gridlayoutUp->addWidget(btnStartPmfs, 0, 3);
+    gridlayoutUp->addWidget(paramWidget, 0, 0, 2, 1);
+    for ( i=1; i<=FILESYS_COUNT; ++i )
+    {
+        gridlayoutUp->addWidget(chkFlagsFsToTest[i-1], 0, i);
+    }
+    gridlayoutUp->addWidget(btnStartTest, 1, i-1);
+
     gridlayoutMain->addLayout(gridlayoutUp, 0, 0, 1, 2);
-    //QSpacerItem *vSpacer0 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
     gridlayoutMain->addWidget(cboRateType, 1, 0, 1, 2);
     gridlayoutMain->addWidget(chartFrame, 2, 0, 1, 2);
     gridlayoutMain->addWidget(chkFlagIozoneLog, 3, 0, 1, 2);
     gridlayoutMain->addWidget(tableIozoneLog, 4, 0, 1, 2);
     gridlayoutMain->addWidget(labelStatus, 5, 0);
     gridlayoutMain->addWidget(progressBar, 5, 1);
+    //QSpacerItem *vSpacer0 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
     this->setLayout(gridlayoutMain);
 }
 
-void iozoneWidget::onStartRamfs()
+void iozoneWidget::onStartTest()
 {
     if(paramWidget->getRunFlag()){
         /* 若正在进行测试则不作反应 */
-        //qDebug()<<"running"<<endl;
         return;
     }
-    paramWidget->setRunFlag(true);/* 测试开始 */
+    /* ifstotest的值在点击start的时候获得 */
+    int i;
+    iFsToTest = 0;
+    for ( i=0; i<FILESYS_COUNT; ++i )
+    {
+        iFsToTest |= chkFlagsFsToTest[i]->isChecked() ? (0x1<< i) : 0;
+    }
+    if ( iFsToTest == 0 ) return; /* 没有勾选需要测试的文件系统则退出 */
+
+    /* 测试开始 */
+    paramWidget->setRunFlag(true);
     /* 进度条置零并显示 */
     progressBar->setValue(0);
-    //progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
     progressBar->setVisible(true);
     labelStatus->setVisible(true);
     /* 设置当前测试文件系统类型 */
-    iCurFsType = FILESYS_TYPE_RAMFS;
+    for ( i=0; i<FILESYS_COUNT; ++i )
+    {
+        if ( (iFsToTest & (0x1<<i)) != 0 )
+        {
+            iCurFsType = i;
+            iFsToTest ^= (0x1<<i);/* 将该项置零 */
+            break;
+        }
+    }
     /* 清空表格 */
     tableIozoneLog->clearContents();
     tableIozoneLog->setRowCount(0);
-    struct iozoneParamStruct * p = paramWidget->getParamData(FILESYS_TYPE_RAMFS);
+    struct iozoneParamStruct * p = paramWidget->getParamData(iCurFsType);
     iozoneThread *iozonethread = new iozoneThread(p, this);
-    //connect(iozonethread, SIGNAL(finished()), chartView, SLOT(update()));
+    if ( iFsToTest != 0 )
+    {   /* 如果还有需要测试的文件系统 */
+        connect(iozonethread, SIGNAL(finished()), this, SLOT(startNextTest()));
+    }
+    else
+    {   /* 如果没有需要测试的文件系统 则该文件系统的测试结束后所有测试结束 */
+        connect(iozonethread, SIGNAL(finished()), paramWidget, SLOT(onTestEnded()));
+    }
     connect(iozonethread, SIGNAL(finished()), iozonethread, SLOT(deleteLater()));
     iozonethread->start();
 }
 
-void iozoneWidget::onStartObfs()
+void iozoneWidget::startNextTest()
 {
-    if(paramWidget->getRunFlag()){
-        /* 若正在进行测试则不作反应 */
-        //qDebug()<<"running"<<endl;
-        return;
-    }
-    paramWidget->setRunFlag(true);/* 测试开始 */
+    if ( iFsToTest == 0 ) return;
+    int i;
     /* 进度条置零并显示 */
     progressBar->setValue(0);
-    //progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
     progressBar->setVisible(true);
     labelStatus->setVisible(true);
     /* 设置当前测试文件系统类型 */
-    iCurFsType = FILESYS_TYPE_OBFS;
-    /* 清空表格 */
-    tableIozoneLog->clearContents();
-    tableIozoneLog->setRowCount(0);
-    struct iozoneParamStruct * p = paramWidget->getParamData(FILESYS_TYPE_OBFS);
-    iozoneThread *iozonethread = new iozoneThread(p, this);
-    connect(iozonethread, SIGNAL(finished()), iozonethread, SLOT(deleteLater()));
-    iozonethread->start();
-}
-
-void iozoneWidget::onStartPmfs()
-{
-    if(paramWidget->getRunFlag()){
-        /* 若正在进行测试则不作反应 */
-        //qDebug()<<"running"<<endl;
-        return;
+    for ( i=0; i<FILESYS_COUNT; ++i )
+    {
+        if ( (iFsToTest & (0x1<<i)) != 0 )
+        {
+            iCurFsType = i;
+            iFsToTest ^= (0x1<<i);/* 将该项置零 */
+            break;
+        }
     }
-    paramWidget->setRunFlag(true);/* 测试开始 */
-    /* 进度条置零并显示 */
-    progressBar->setValue(0);
-    //progressBar->setRange(0, 100*(paramWidget->getTestTimes()) );/* 进度条范围 */
-    progressBar->setVisible(true);
-    labelStatus->setVisible(true);
-    /* 设置当前测试文件系统类型 */
-    iCurFsType = FILESYS_TYPE_PMFS;
     /* 清空表格 */
     tableIozoneLog->clearContents();
     tableIozoneLog->setRowCount(0);
-    struct iozoneParamStruct * p = paramWidget->getParamData(FILESYS_TYPE_PMFS);
+    struct iozoneParamStruct * p = paramWidget->getParamData(iCurFsType);
     iozoneThread *iozonethread = new iozoneThread(p, this);
+    if ( iFsToTest != 0 )
+    {   /* 如果还有需要测试的文件系统 */
+        connect(iozonethread, SIGNAL(finished()), this, SLOT(startNextTest()));
+    }
+    else
+    {   /* 如果没有需要测试的文件系统 则该文件系统的测试结束后所有测试结束 */
+        connect(iozonethread, SIGNAL(finished()), paramWidget, SLOT(onTestEnded()));
+    }
     connect(iozonethread, SIGNAL(finished()), iozonethread, SLOT(deleteLater()));
     iozonethread->start();
 }
@@ -178,7 +202,8 @@ void iozoneWidget::myEventHandle(QEvent *e)
         /*改变进度条值*/
         progressBar->setValue(iRowCount*100/paramWidget->getTotalTimes());
     }
-    labelStatus->setText( QString("%1/%2").arg(siCurTimes+1).arg(paramWidget->getTestTimes() ) );
+    /* 改变状态文本 */
+    labelStatus->setText( tr("Testing ")+qslFsType[iCurFsType] + QString(" %1/%2").arg(siCurTimes+1).arg( paramWidget->getTestTimes() ) );
     unsigned long long tmpRate;
     switch( ioze->iType ){
 
