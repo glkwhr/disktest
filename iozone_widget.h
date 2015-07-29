@@ -17,10 +17,11 @@
 
 #ifndef FILESYS_TYPE
 #define FILESYS_TYPE
-#define FILESYS_COUNT 3
+#define FILESYS_COUNT 4
 #define FILESYS_TYPE_RAMFS 0
 #define FILESYS_TYPE_OBFS 1
 #define FILESYS_TYPE_PMFS 2
+#define FILESYS_TYPE_EXT4 3
 #endif
 
 #ifndef OUTPUT_TYPE
@@ -37,29 +38,26 @@ class iozoneWidget : public QWidget
 {
     Q_OBJECT
 public slots:
+    void onShowConfig();
     void onStartTest();
     void startNextTest();
-    //void onStartObfs();
-    //void onStartPmfs();
-    //void onRateTypeChanged(const int);
 
 public:
     iozoneWidget(QWidget * parent);
     void myEventHandle(QEvent * e);
 
 private:
+    QFrame *frameConfig;
+    QPushButton *btnShowConfig;
     QPushButton *btnStartTest;
-    //QPushButton *btnStartObfs;
-    //QPushButton *btnStartPmfs;
     QTableWidget *tableIozoneLog;
     QCheckBox *chkFlagsFsToTest[FILESYS_COUNT];
-    //QCheckBox *chkFlagObfs;
-    //QCheckBox *chkFlagPmfs;
     QCheckBox *chkFlagIozoneLog;
     QProgressBar *progressBar;
     QLabel *labelStatus;
     QComboBox *cboRateType;
     QStringList qslFsType;
+    bool bFlagShowConfig; /* 设置是否显示详细设置 */
     bool bFlagIozoneLog; //设置是否显示log窗口
     int iCurFsType; /* 当前测试文件系统类型 */
 

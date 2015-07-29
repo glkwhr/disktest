@@ -8,9 +8,11 @@
 
 #ifndef FILESYS_TYPE
 #define FILESYS_TYPE
+#define FILESYS_COUNT 4
 #define FILESYS_TYPE_RAMFS 0
 #define FILESYS_TYPE_OBFS 1
 #define FILESYS_TYPE_PMFS 2
+#define FILESYS_TYPE_EXT4 3
 #endif
 
 
