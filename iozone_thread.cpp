@@ -39,15 +39,26 @@ void iozoneThread::run()
     for( ; i<DEFAULT_ARGV; ++i)
         argv[i] = new char[DEFAULT_ARG_CHAR];
 
-    QString lineMount = "mount";
+    /* 格式化设备并挂载 */
+    QString qsCommand;
     QStringList args;
+    qsCommand = "mkfs";
+    if ( param->bFlagMnt == true )
+    {   /* 格式化设备 */
+        args.append("-t");
+        args.append(param->qsFsType);
+        args.append(param->qsDevDir);
+        QProcess::execute(qsCommand, args);
+    }
+    qsCommand = "mount";
+    args.clear();
     if ( param->bFlagMnt == true )
     {   /* 挂载文件系统 */
         args.append("-t");
         args.append(param->qsFsType);
         args.append(param->qsDevDir);
         args.append(param->qsMntDir);
-        QProcess::execute(lineMount, args);
+        QProcess::execute(qsCommand, args);
     }
 
     //获取系统时间并设置显示格式
@@ -182,10 +193,10 @@ void iozoneThread::run()
         /* 判断是否需要取消挂载 */
         if ( param->bFlagMnt == true )
         {   /* 取消挂载 */
-            lineMount = "umount";
+            qsCommand = "umount";
             args.clear();
             args.append(param->qsMntDir);
-            QProcess::execute(lineMount, args);
+            QProcess::execute(qsCommand, args);
         }
 
         /* 测试结束 */
