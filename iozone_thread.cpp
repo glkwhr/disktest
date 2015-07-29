@@ -96,21 +96,20 @@ void iozoneThread::run()
         shmid = shmget( ftok(".", 1), sizeof(struct shmNotify), 0666|IPC_CREAT);
         if(shmid == -1)
         {
-            exit(EXIT_FAILURE);
+            _exit(EXIT_FAILURE);
         }
         shm = shmat(shmid, (void*)0, 0);
         if(shm == (void*)-1)
         {
-            exit(EXIT_FAILURE);
+            _exit(EXIT_FAILURE);
         }
         qDebug()<<"Child Memory attached at "<<shm<<endl;
         pShmNotify = (struct shmNotify*)shm;
         pShmNotify->notifyFlag = 0;
-
+        /* 调用iozone主函数 */
         iozoneMain(p, argc, argv);
-
+        /* 一轮测试结束 */
         waitFlag->acquire();/* 若父进程等待 */
-        //while(pShmNotify->notifyFlag == 1);/* 等待父进程处理完毕 */
         pShmNotify->notifyFlag = -1;/* 结束标志 */
         callFlag->release();/* 子进程已发出通知 */
 
@@ -118,9 +117,9 @@ void iozoneThread::run()
         if(shmdt(pShmNotify) == -1)
         {
             qDebug()<<"shmdt failed"<<endl;
-            exit(EXIT_FAILURE);
+            _exit(EXIT_FAILURE);
         }
-        exit();
+        _exit(0);
         /*-----子进程结束-----*/
     }
     else if(pid>0){
@@ -139,38 +138,48 @@ void iozoneThread::run()
         }
         qDebug()<<"Father Memory attached at "<<shm<<endl;
         pShmNotify = (struct shmNotify*)shm;
+
+        /* 等待处理子进程的通知直到子进程发出结束标志 */
         while(1)
         {
             callFlag->acquire();/* 若子进程已发出通知 */
             if(pShmNotify->notifyFlag == 1)
-            {
+            {   /* 若子进程通知传数据,父进程创建事件对象传给主窗口 */
                 notifyGUI(pShmNotify->type, pShmNotify->kb, pShmNotify->reclen, pShmNotify->speed);
-                pShmNotify->notifyFlag = 0;
+                pShmNotify->notifyFlag = 0;/* 标志位置为已接收 */
                 waitFlag->release();/* 父进程等待 */
                 continue;
             }
             else if(pShmNotify->notifyFlag == -1)
-            {
-                pShmNotify->notifyFlag = 0;
+            {   /* 若子进程通知一轮测试已结束 */
+                pShmNotify->notifyFlag = 0;/* 将标志位置为已接收 */
                 waitFlag->release();/* 父进程等待 */
                 break;
             }
         }
+
         waitpid(pid, NULL, 0);/* 等待子进程 */
+
         /* 把共享内存从当前进程分离 */
         if(shmdt(pShmNotify) == -1)
         {
             qDebug()<<"shmdt failed"<<endl;
             exit(EXIT_FAILURE);
         }
+
+        /* 释放对象 */
         delete callFlag;
         delete waitFlag;
+
+        /* 判断测试轮数是否达到要求,没有达到的话再fork一次 */
         if ( i < param->iTestTimes )
         {   /* 下次fork之前恢复初始状态 否则会出错 */
             callFlag = new QSystemSemaphore("notify", 0, QSystemSemaphore::Create);
             waitFlag = new QSystemSemaphore("wait", 1, QSystemSemaphore::Create);
             goto goFork;
         }
+
+        /* 判断是否需要取消挂载 */
         if ( param->bFlagMnt == true )
         {   /* 取消挂载 */
             lineMount = "umount";
@@ -178,8 +187,9 @@ void iozoneThread::run()
             args.append(param->qsMntDir);
             QProcess::execute(lineMount, args);
         }
+
         /* 测试结束 */
-        *(param->pbFlagRun) = false;
+        //*(param->pbFlagRun) = false; 在iozonewidget中修改
 
         /* 释放内存 */
         for ( i = 0; i < DEFAULT_ARGV; ++i)

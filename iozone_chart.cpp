@@ -1,7 +1,7 @@
 #include "iozone_chart.h"
 
 iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
-    QCustomPlot(parent)//, QFrame(parent)
+    QCustomPlot(parent)
 {
     iRateType = 0;
     qslFsName << "RAMFS" << "OBFS" << "PMFS";
@@ -41,7 +41,7 @@ iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     this->yAxis->grid()->setSubGridPen(gridPen);
 
     // setup legend:
-    this->legend->setVisible(true);
+    this->legend->setVisible(false);
     this->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
     this->legend->setBrush(QColor(255, 255, 255, 200));
     QPen legendPen;
@@ -68,6 +68,7 @@ void iozoneChart::setModel(int rateType, iozoneRateModel *model)
 void iozoneChart::update(void)
 {
     this->clearGraphs();
+    this->legend->setVisible(true);
     this->yAxis->setRange(0, MINIMUM_DATA_RANGE);
     this->yAxis->setLabel( qslRateName[iRateType] + " Rate (kBytes/sec)");
 
