@@ -15,7 +15,7 @@
 #include <QStringList>
 
 
-char global_fschararray[FS_NUM][16] = {"ramfs", "tmpfs","ext2", "ext3", "ext4"};
+char global_fschararray[FS_NUM][16] = {"ramfs", "obfs","pmfs"};
 
 
 postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
@@ -41,8 +41,8 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     chart2->setFixedHeight(300);
 
     QTabWidget * tabwidget = new QTabWidget(this);
-    tabwidget->addTab(chart1, "files");
-    tabwidget->addTab(chart2, "bytes");
+    tabwidget->addTab(chart1, "Files");
+    tabwidget->addTab(chart2, "Throughput");
 
 
     QStringList header;
