@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     widget1 = new iozoneWidget(this);
     widget2 = new postmarkWidget(this);
 
-    QIcon icon1(":/icons/iozone_icon.png");
+    QIcon icon1(":/icons/iozone_tab.png");
     tabwidget->addTab(widget1, icon1, "Iozone");
 
     QIcon icon2(":/icons/postmark.png");
