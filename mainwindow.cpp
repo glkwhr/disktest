@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     QIcon icon2(":/icons/postmark.png");
     tabwidget->addTab(widget2, icon2, "Postmark");
+
+    this->resize(500, 400);
 }
 
 MainWindow::~MainWindow()
