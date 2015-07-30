@@ -42,6 +42,12 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
             qsetConfig->setValue("mnt", "/pmfs");
             qsetConfig->setValue("fstype", "pmfs");
         qsetConfig->endGroup();
+        qsetConfig->beginGroup("ext4");
+            qsetConfig->setValue("filename", "/ext4/tmpfile");
+            qsetConfig->setValue("dev", "/dev/ext4");
+            qsetConfig->setValue("mnt", "/ext4");
+            qsetConfig->setValue("fstype", "ext4");
+        qsetConfig->endGroup();
     }
     else{
         /* 读取ini文件 */
@@ -78,6 +84,12 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
         qsPmfsMntDir = qsetConfig->value("mnt").toString();
         qsPmfsFsType = qsetConfig->value("fstype").toString();
     qsetConfig->endGroup();
+    qsetConfig->beginGroup("ext4");
+        qsExt4FileName = qsetConfig->value("filename").toString();
+        qsExt4DevDir = qsetConfig->value("dev").toString();
+        qsExt4MntDir = qsetConfig->value("mnt").toString();
+        qsExt4FsType = qsetConfig->value("fstype").toString();
+    qsetConfig->endGroup();
 
     iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
     if(iTotalTimes > 13) iTotalTimes = 13;/* 用于进度条控制 */
@@ -86,17 +98,26 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
     btnConfigDir.setText(tr("..."));
 
     /* 文件大小选择 */
-    labelFileSize.setText(QString::number(iFileSize )+tr(" M"));
+    labelFileSize.setText(tr("File Size ")+QString::number(iFileSize )+tr(" M"));
     labelFileSize.setAlignment(Qt::AlignLeft);
     sliderFileSize.setOrientation(Qt::Horizontal);
     sliderFileSize.setRange(0, 4);/* 16 32 64 128 256 */
     sliderFileSize.setValue((int)log2((double)iFileSize)-4);/* 当前值转到slider上 */
     connect(&sliderFileSize, SIGNAL(valueChanged(int)), this, SLOT(onFileSizeChanged(int)));
+    /* 测试次数选择 */
+    labelTestTimes.setText(tr("Test Times "));
+    labelTestTimes.setAlignment(Qt::AlignLeft);
+    qsbTestTimes.setSingleStep(1);
+    qsbTestTimes.setRange(1,100);
+    qsbTestTimes.setValue(iTestTimes);
+    connect(&qsbTestTimes, SIGNAL(valueChanged(int)), this, SLOT(onTestTimesChanged(int)));
 
-    QGridLayout * gridlayout = new QGridLayout;
+    QGridLayout * gridlayout = new QGridLayout(this);
     gridlayout->addWidget(&labelFileSize, 0, 0);
     gridlayout->addWidget(&sliderFileSize, 0, 1);
-
+    gridlayout->addWidget(&labelTestTimes, 1, 0);
+    gridlayout->addWidget(&qsbTestTimes, 1, 1);
+    gridlayout->setMargin(0);
     this->setLayout(gridlayout);
 }
 
@@ -133,6 +154,12 @@ struct iozoneParamStruct * iozoneParamWidget::getParamData(int type)
         res->qsMntDir = qsPmfsMntDir;
         res->qsFsType = qsPmfsFsType;
         break;
+    case FILESYS_TYPE_EXT4:
+        res->qsFileName = qsExt4FileName;
+        res->qsDevDir = qsExt4DevDir;
+        res->qsMntDir = qsExt4MntDir;
+        res->qsFsType = qsExt4FsType;
+        break;
     default:
         break;
     }
@@ -151,9 +178,13 @@ void iozoneParamWidget::onFileSizeChanged(int iSetFileSize)
         iFileSize *= 2;
     iTotalTimes = (int)log2((double)iFileSize*1024) - 1;
     if(iTotalTimes>13) iTotalTimes = 13; /*用于之后的进度条操作*/
-    labelFileSize.setText(QString::number(iFileSize)+tr(" M"));
+    labelFileSize.setText(tr("File Size ")+QString::number(iFileSize)+tr(" M"));
 }
 
+void iozoneParamWidget::onTestTimesChanged(int iSetTestTimes)
+{
+    iTestTimes = iSetTestTimes;
+}
 
 /* 修改配置文件目录 */
 void iozoneParamWidget::onConfigDirClicked(void)
@@ -181,4 +212,9 @@ void iozoneParamWidget::onConfigDirClicked(void)
     } else {
             //QMessageBox::information(NULL, tr("Path"), tr("You didn't select any files."));
     }
+}
+
+void iozoneParamWidget::onTestEnded(void)
+{
+    bFlagRun = false;
 }
