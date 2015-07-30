@@ -1027,3 +1027,15 @@ AboutDialog QTextEdit {
 ViewCert {
   min-height: 600px;
 }
+
+QProgressBar{
+	color : solid gray;
+	border: 2px solid gray;
+	border-radius: 5px;
+	background: transparent;
+	padding: 0px;
+	text-align : center ;
+}
+QProgressBar::chunk{
+	background: #27408B;
+}
