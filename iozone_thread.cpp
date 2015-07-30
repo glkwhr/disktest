@@ -42,24 +42,32 @@ void iozoneThread::run()
     /* 格式化设备并挂载 */
     QString qsCommand;
     QStringList args;
-    qsCommand = "mkfs";
     if ( param->bFlagMnt == true )
     {   /* 格式化设备 */
+        qsCommand = "mkfs";
         args.append("-t");
         args.append(param->qsFsType);
         args.append(param->qsDevDir);
         QProcess::execute(qsCommand, args);
     }
-    qsCommand = "mount";
-    args.clear();
     if ( param->bFlagMnt == true )
     {   /* 挂载文件系统 */
+        qsCommand = "mount";
+        args.clear();
         args.append("-t");
         args.append(param->qsFsType);
         args.append(param->qsDevDir);
         args.append(param->qsMntDir);
         QProcess::execute(qsCommand, args);
     }
+    if ( param->bFlagShell == true )
+    {   /* 执行shell 以"sh ./shell fstype mount"格式 */
+        qsCommand = "sh";
+        args.clear();
+        args << param->qsShellDir << param->qsFsType << "mount";
+        QProcess::execute( qsCommand, args );
+    }
+    sleep(1);/* 给时间完成以上工作 */
 
     //获取系统时间并设置显示格式
     QDateTime currentDateTime = QDateTime::currentDateTime();
@@ -197,6 +205,13 @@ void iozoneThread::run()
             args.clear();
             args.append(param->qsMntDir);
             QProcess::execute(qsCommand, args);
+        }
+        if ( param->bFlagShell == true )
+        {   /* 执行shell 以"sh ./shell fstype mount"格式 */
+            qsCommand = "sh";
+            args.clear();
+            args << param->qsShellDir << param->qsFsType << "umount";
+            QProcess::execute( qsCommand, args );
         }
 
         /* 测试结束 */

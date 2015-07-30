@@ -14,6 +14,8 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
         qsetConfig = new QSettings(tr("config.ini"), QSettings::IniFormat);
 
         qsetConfig->beginGroup("testConfig");
+            qsetConfig->setValue("shell", false);/* 是否使用shell执行 */
+            qsetConfig->setValue("shelldir", "./shell.sh");/* 默认shell位置 */
             qsetConfig->setValue("filesize", DEFAULT_CONFIG_FILESIZE);
             qsetConfig->setValue("testtimes", DEFAULT_CONFIG_TESTTIMES);
             qsetConfig->setValue("mkfs", false);/* 是否自动格式化 */
@@ -56,8 +58,10 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
     }
     /* 从当前目录下的ini文件读取配置信息 */
     qsetConfig->beginGroup("testConfig");
+        bFlagShell = qsetConfig->value("shell").toBool();
+        qsShellDir = qsetConfig->value("shelldir").toString();
         iFileSize = qsetConfig->value("filesize").toInt();
-        iTestTimes = qsetConfig->value("testtimes").toInt(); //qDebug()<<iTestTimes;
+        iTestTimes = qsetConfig->value("testtimes").toInt();
         bFlagMkfs = qsetConfig->value("mkfs").toBool();/* 是否自动格式化 */
         bFlagMnt = qsetConfig->value("mount").toBool();
         bFlaga = qsetConfig->value("flaga").toBool();
@@ -125,6 +129,9 @@ iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)
 struct iozoneParamStruct * iozoneParamWidget::getParamData(int type)
 {
     struct iozoneParamStruct *res = new iozoneParamStruct;
+    res->iCurFsType = type;
+    res->bFlagShell = bFlagShell;
+    res->qsShellDir = qsShellDir;
     res->iFileSize = iFileSize;
     res->iTestTimes = iTestTimes;
     res->bFlagMkfs = bFlagMkfs;
