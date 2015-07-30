@@ -150,17 +150,17 @@ QToolButton#qt_toolbar_ext_button {
   min-width: 8px;
   width: 8px;
   padding: 1px;
-  qproperty-icon: url(skin:controls/toolbar_ext.svg);
+  qproperty-icon: url(:/control/toolbar_ext.svg);
 }
 
 QToolBar::handle:horizontal {
-  image: url(skin:controls/handle_horizontal.svg);
+  image: url(:/control/handle_horizontal.svg);
   width: 8px;
   padding: 4px;
 }
 
 QToolBar::handle:vertical {
-  image: url(skin:controls/handle_vertical.svg);
+  image: url(:/control/handle_vertical.svg);
   height: 8px;
   padding: 4px;
 }
@@ -293,7 +293,7 @@ QListView::item:selected:active {
   border: 1px solid #3e4f5e;
 }
 
-QTreeView {
+QTableView {
   background-color: #1d1d1d;
   color: #d8d8d8;
   selection-background-color: #1d1d1d;
@@ -301,7 +301,7 @@ QTreeView {
   border: 1px solid #1c1c1c;
 }
 
-QTreeView::item {
+QTableView::item {
   min-width: 60px;
   border: 1px solid transparent;
   border-left: 0;
@@ -312,61 +312,61 @@ QTreeView::item {
   border-radius: 0;
 }
 
-QTreeView::item:first,
-QTreeView::item:only-one {
+QTableView::item:first,
+QTableView::item:only-one {
   border-left: 1px solid transparent;
   border-top-left-radius: 2px;
   border-bottom-left-radius: 2px;
 }
 
-QTreeView::item:last,
-QTreeView::item:only-one {
+QTableView::item:last,
+QTableView::item:only-one {
   border-right: 1px solid transparent;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
 }
 
-QTreeView::item:hover,
-QTreeView::item:focus {
+QTableView::item:hover,
+QTableView::item:focus {
   background-color: #333333;
   border-color: #333333;
 }
 
-QTreeView::item:selected {
+QTableView::item:selected {
   background-color: #3b3b3b;
   border: 1px solid #3b3b3b;
   border-right: 0;
   border-left: 0;
 }
 
-QTreeView::item:selected:first,
-QTreeView::item:selected:only-one {
+QTableView::item:selected:first,
+QTableView::item:selected:only-one {
   border-left: 1px solid #3b3b3b;
 }
 
-QTreeView::item:selected:last,
-QTreeView::item:selected:only-one {
+QTableView::item:selected:last,
+QTableView::item:selected:only-one {
   border-right: 1px solid #3b3b3b;
 }
 
-QTreeView::item:selected:active {
+QTableView::item:selected:active {
   background-color: #3e4f5e;
   border: 1px solid #3e4f5e;
   border-right: 0;
   border-left: 0;
 }
 
-QTreeView::item:selected:active:first,
-QTreeView::item:selected:active:only-one {
+QTableView::item:selected:active:first,
+QTableView::item:selected:active:only-one {
   border-left: 1px solid #3e4f5e;
 }
 
-QTreeView::item:selected:active:last,
-QTreeView::item:selected:active:only-one {
+QTableView::item:selected:active:last,
+QTableView::item:selected:active:only-one {
   border-right: 1px solid #3e4f5e;
 }
 
-QTreeView::branch {
+QTableView::branch {
   border-image: none;
   image: none;
   margin-left: 3px;
@@ -374,12 +374,12 @@ QTreeView::branch {
   padding-left: 3px;
 }
 
-QTreeView::branch:has-children:closed {
-  image: url(skin:controls/branch_closed.svg);
+QTableView::branch:has-children:closed {
+  image: url(:/control/branch_closed.svg);
 }
 
-QTreeView::branch:has-children:open {
-  image: url(skin:controls/branch_open.svg);
+QTableView::branch:has-children:open {
+  image: url(:/control/branch_open.svg);
 }
 
 QHeaderView {
@@ -406,11 +406,11 @@ QHeaderView::up-arrow {
 }
 
 QHeaderView::down-arrow {
-  image: url(skin:controls/arrow_down.svg);
+  image: url(:/control/arrow_down.svg);
 }
 
 QHeaderView::up-arrow {
-  image: url(skin:controls/arrow_up.svg);
+  image: url(:/control/arrow_up.svg);
 }
 
 QTabWidget::pane {
@@ -619,13 +619,13 @@ QDateTimeEdit::drop-down {
 QComboBox::down-arrow,
 QDateTimeEdit::down-arrow {
   margin-top: -2px;
-  image: url(skin:controls/arrow_down.svg);
+  image: url(:/control/arrow_down.svg);
   width: 14px;
 }
 
 QComboBox::down-arrow:disabled,
 QDateTimeEdit::down-arrow:disabled {
-  image: url(skin:controls/arrow_down_disabled.svg);
+  image: url(:/control/arrow_down_disabled.svg);
 }
 
 QToolButton[popupMode="1"],
@@ -639,7 +639,7 @@ QToolButton::menu-arrow,
 QToolButton::menu-indicator,
 QPushButton::menu-arrow,
 QPushButton::menu-indicator {
-  image: url(skin:controls/arrow_down.svg);
+  image: url(:/control/arrow_down.svg);
   subcontrol-origin: padding;
   subcontrol-position: center right;
   top: 2px;
@@ -650,27 +650,27 @@ QPushButton::menu-indicator {
 QSpinBox::down-button,
 QAbstractSpinBox::down-button {
   padding-right: 4px;
-  image: url(skin:controls/arrow_down.svg);
+  image: url(:/control/arrow_down.svg);
   width: 14px;
   padding-bottom: 1px;
 }
 
 QSpinBox::down-button:disabled,
 QAbstractSpinBox::down-button:disabled {
-  image: url(skin:controls/arrow_down_disabled.svg);
+  image: url(:/control/arrow_down_disabled.svg);
 }
 
 QSpinBox::up-button,
 QAbstractSpinBox::up-button {
   padding-right: 4px;
-  image: url(skin:controls/arrow_up.svg);
+  image: url(:/control/arrow_up.svg);
   width: 14px;
   padding-top: 1px;
 }
 
 QSpinBox::up-button:disabled,
 QAbstractSpinBox::up-button:disabled {
-  image: url(skin:controls/arrow_up_disabled.svg);
+  image: url(:/control/arrow_up_disabled.svg);
 }
 
 QComboBox QAbstractItemView {
@@ -683,14 +683,14 @@ QComboBox QAbstractItemView {
 QLabel,
 QCheckBox,
 QAbstractCheckBox,
-QTreeView::indicator,
+QTableView::indicator,
 QRadioButton {
   color: #d8d8d8;
   background: transparent;
 }
 
 QCheckBox::indicator,
-QTreeView::indicator {
+QTableView::indicator {
   background-color: #444444;
   border: 1px solid #444444;
   height: 13px;
@@ -705,20 +705,20 @@ QMenu::indicator {
 
 QCheckBox::indicator:checked,
 QMenu::indicator:checked,
-QTreeView::indicator:checked {
-  image: url(skin:controls/checkbox_check_dark.svg);
+QTableView::indicator:checked {
+  image: url(:/control/checkbox_check_dark.svg);
 }
 
 QCheckBox::indicator:disabled,
-QTreeView::indicator:disabled {
+QTableView::indicator:disabled {
   border: 1px solid #2d2d2d;
   background-color: #282828;
 }
 
 QCheckBox::indicator:checked:disabled,
-QTreeView::indicator:checked:disabled {
+QTableView::indicator:checked:disabled {
   border: 1px solid transparent;
-  image: url(skin:controls/checkbox_check_disabled.svg);
+  image: url(:/control/checkbox_check_disabled.svg);
 }
 
 QRadioButton::indicator {
@@ -729,7 +729,7 @@ QRadioButton::indicator {
   width: 12px;
 }
 
-QTreeView::indicator {
+QTableView::indicator {
   background: #444444;
 }
 
@@ -740,11 +740,11 @@ QRadioButton::indicator:disabled {
 }
 
 QRadioButton::indicator:checked {
-  image: url(skin:controls/radio_check_dark.svg);
+  image: url(:/control/radio_check_dark.svg);
 }
 
 QRadioButton::indicator:checked:disabled {
-  image: url(skin:controls/radio_check_disabled.svg);
+  image: url(:/control/radio_check_disabled.svg);
 }
 
 QSlider::groove {
@@ -812,14 +812,14 @@ QSlider::handle:disabled {
 }
 
 QCheckBox::indicator:focus,
-QTreeView::indicator:focus,
+QTableView::indicator:focus,
 QRadioButton::indicator:focus,
 QComboBox:focus {
   background-color: #3e4f5e;
 }
 
 QCheckBox::indicator:focus:hover,
-QTreeView::indicator:focus:hover,
+QTableView::indicator:focus:hover,
 QRadioButton::indicator:focus:hover,
 QComboBox:focus:hover {
   background-color: #485d6f;
@@ -827,7 +827,7 @@ QComboBox:focus:hover {
 }
 
 QCheckBox::indicator:hover,
-QTreeView::indicator:hover,
+QTableView::indicator:hover,
 QRadioButton::indicator:hover,
 QComboBox:hover {
   background-color: #595959;
@@ -857,7 +857,7 @@ QComboBox:editable:hover {
 }
 
 QCheckBox::indicator:focus,
-QTreeView::indicator:focus,
+QTableView::indicator:focus,
 QRadioButton::indicator:focus,
 QComboBox:focus,
 QLineEdit:focus,
@@ -988,8 +988,8 @@ QSlider {
 
 QListView::item QListWidgetItem,
 QListView::item QLineEdit,
-QTreeView::item QComboBox,
-QTreeView::item QLineEdit {
+QTableView::item QComboBox,
+QTableView::item QLineEdit {
   background: #444444;
   margin: 0;
   padding-top: 0;
@@ -1001,8 +1001,8 @@ QTreeView::item QLineEdit {
 
 QListView::item QListWidgetItem:hover,
 QListView::item QLineEdit:hover,
-QTreeView::item QComboBox:hover,
-QTreeView::item QLineEdit:hover {
+QTableView::item QComboBox:hover,
+QTableView::item QLineEdit:hover {
   background: #444444;
 }
 
