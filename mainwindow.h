@@ -21,23 +21,10 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
-
-
-
-    QAction *openAction;
-    QAction *saveAction;
-
     iozoneWidget * widget1;
     postmarkWidget * widget2;
 
-
-
-
-
     bool event(QEvent *event);
-public slots:
-    void openfile();
-    void savefile();
 };
 
 
