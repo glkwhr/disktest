@@ -15,6 +15,7 @@
 
 #include <cmath>
 
+/* 文件系统的类型和数量 */
 #ifndef FILESYS_TYPE
 #define FILESYS_TYPE
 #define FILESYS_COUNT 4
@@ -23,7 +24,7 @@
 #define FILESYS_TYPE_PMFS 2
 #define FILESYS_TYPE_EXT4 3
 #endif
-
+/* 一些设置中的默认值 */
 #ifndef DEFAULT_CONFIG
 #define DEFAULT_CONFIG
 #define DEFAULT_CONFIG_FILESIZE 16
@@ -34,14 +35,17 @@ struct iozoneParamStruct{
     /*设置参数*/
     int iFileSize; /* 文件大小 */
     int iTestTimes;
+    int iCurFsType;/* 文件系统类型 */
     bool bFlagMkfs; /* 格式化 */
     bool bFlagMnt; /* 挂载 */
+    bool bFlagShell;
     bool bFlaga;
     bool bFlags;
     bool bFlagi0;
     bool bFlagi1;
     bool bFlagi2;
     bool *pbFlagRun;
+    QString qsShellDir;/* shell位置 */
     QString qsFileName;
     QString qsDevDir;
     QString qsMntDir;
@@ -81,12 +85,14 @@ private:
     int iTotalTimes;
     bool bFlagMkfs; /* 格式化 */
     bool bFlagMnt; /* 挂载 */
+    bool bFlagShell; /* 使用sh脚本实现格式化,挂载和卸载 */
     bool bFlaga;
     bool bFlags;
     bool bFlagi0;
     bool bFlagi1;
     bool bFlagi2;
     bool bFlagRun; /* 正在执行 点击start时变true thread中iozoneMain执行完后变false */
+    QString qsShellDir; /* sh脚本路径 */
     QString qsRamfsFileName;
     QString qsRamfsDevDir;/* 设备路径 */
     QString qsRamfsMntDir;/* 挂载路径 */

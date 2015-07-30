@@ -3,4 +3,19 @@
         <file>iozone_tab.png</file>
         <file>postmark.png</file>
     </qresource>
+    <qresource prefix="/qss">
+        <file>skin.qss</file>
+    </qresource>
+    <qresource prefix="/control">
+        <file>checkbox_check_dark.svg</file>
+        <file>checkbox_check_disabled.svg</file>
+        <file>checkbox_check_lite.svg</file>
+        <file>arrow_down.svg</file>
+        <file>arrow_down_disabled.svg</file>
+        <file>arrow_up.svg</file>
+        <file>arrow_up_disabled.svg</file>
+        <file>handle_horizontal.svg</file>
+        <file>handle_vertical.svg</file>
+        <file>toolbar_ext.svg</file>
+    </qresource>
 </RCC>

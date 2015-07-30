@@ -10,6 +10,41 @@ iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     QGridLayout *gridlayout = new QGridLayout(frame);
     gridlayout->addWidget(this, 0, 0);
     gridlayout->setMargin(0);
+
+    //this->setBackground(QBrush(QColor(30, 30, 30)));
+    this->xAxis->setBasePen(QPen(Qt::white, 1));
+    this->yAxis->setBasePen(QPen(Qt::white, 1));
+    this->xAxis->setTickPen(QPen(Qt::white, 1));
+    this->yAxis->setTickPen(QPen(Qt::white, 1));
+    this->xAxis->setSubTickPen(QPen(Qt::white, 1));
+    this->yAxis->setSubTickPen(QPen(Qt::white, 1));
+    this->xAxis->setTickLabelColor(Qt::white);
+    this->yAxis->setTickLabelColor(Qt::white);
+    this->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    this->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    this->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    this->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    this->xAxis->grid()->setSubGridVisible(true);
+    this->yAxis->grid()->setSubGridVisible(true);
+    this->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+    this->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+    this->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    this->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    this->xAxis->setLabelColor(QColor(200, 200, 200));
+    this->yAxis->setLabelColor(QColor(200, 200, 200));
+    QLinearGradient plotGradient;
+    plotGradient.setStart(0, 0);
+    plotGradient.setFinalStop(0, this->geometry().height());
+    plotGradient.setColorAt(0, QColor(80, 80, 80));
+    plotGradient.setColorAt(1, QColor(50, 50, 50));
+    QLinearGradient axisRectGradient;
+    axisRectGradient.setStart(0, 0);
+    axisRectGradient.setFinalStop(0, this->geometry().height());
+    axisRectGradient.setColorAt(0, QColor(80, 80, 80));
+    axisRectGradient.setColorAt(1, QColor(30, 30, 30));
+    this->axisRect()->setBackground(axisRectGradient);
+    this->setBackground(plotGradient);
+
     // prepare x axis with labels:
     for ( int i=1; i<=13; ++i ){
         ticks << i;
@@ -22,7 +57,6 @@ iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     this->xAxis->setTickLabelRotation(30);
     this->xAxis->setSubTickCount(0);
     this->xAxis->setTickLength(0, 4);
-    this->xAxis->grid()->setVisible(true);
     this->xAxis->setRange(0, 14);
     this->xAxis->setLabel("Reclen (kB)");
     this->xAxis->setPadding(5);
@@ -32,23 +66,17 @@ iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     this->yAxis->setRange(0, MINIMUM_DATA_RANGE);
     this->yAxis->setPadding(5); // a bit more space to the left border
     this->yAxis->setLabel( qslRateName[iRateType] + " Rate (kBytes/sec)"); /* y axis名由rateType定 */
-    this->yAxis->grid()->setSubGridVisible(true);
-    QPen gridPen;
-    gridPen.setStyle(Qt::SolidLine);
-    gridPen.setColor(QColor(0, 0, 0, 25));
-    this->yAxis->grid()->setPen(gridPen);
-    gridPen.setStyle(Qt::DotLine);
-    this->yAxis->grid()->setSubGridPen(gridPen);
 
     // setup legend:
     this->legend->setVisible(false);
     this->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-    this->legend->setBrush(QColor(255, 255, 255, 200));
+    this->legend->setBrush(QColor(80, 80, 80, 200));
     QPen legendPen;
-    legendPen.setColor(QColor(130, 130, 130, 200));
+    legendPen.setColor(QColor(200, 200, 200, 200));
     this->legend->setBorderPen(legendPen);
     QFont legendFont = font();
     legendFont.setPointSize(10);
+    this->legend->setTextColor(QColor(200, 200, 200, 200));
     this->legend->setFont(legendFont);
 }
 
