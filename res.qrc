@@ -1,8 +1,4 @@
 <RCC>
-    <qresource prefix="/images">
-        <file>file-open.png</file>
-        <file>file-save.png</file>
-    </qresource>
     <qresource prefix="/icons">
         <file>iozone_tab.png</file>
         <file>postmark.png</file>
