@@ -33,7 +33,6 @@ class iozoneThread : public QThread
     Q_OBJECT
 public:
     struct iozoneParamStruct * param;
-    //iozoneThread(struct iozoneParamStruct * p, QObject * parent = 0);
     iozoneThread(struct iozoneParamStruct * p, QObject * parent = 0) : QThread(parent), param(p)
     {
 
