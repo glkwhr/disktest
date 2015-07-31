@@ -15,7 +15,7 @@
 #include <QStringList>
 
 
-char global_fschararray[FS_NUM][16] = {"ramfs", "obfs","pmfs"};
+char global_fschararray[FS_NUM][16] = {"ramfs", "obfs","pmfs", "ext4"};
 
 
 postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)

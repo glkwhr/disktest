@@ -50,6 +50,44 @@ postmarkChart::postmarkChart(int k, QTableWidget *tbl, QWidget *parent):QCustomP
     this->legend->setVisible(true);
     this->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
     this->legend->setBrush(QColor(255, 255, 255, 200));
+
+
+    this->xAxis->setBasePen(QPen(Qt::white, 1));
+    this->yAxis->setBasePen(QPen(Qt::white, 1));
+    this->xAxis->setTickPen(QPen(Qt::white, 1));
+    this->yAxis->setTickPen(QPen(Qt::white, 1));
+    this->xAxis->setSubTickPen(QPen(Qt::white, 1));
+    this->yAxis->setSubTickPen(QPen(Qt::white, 1));
+    this->xAxis->setTickLabelColor(Qt::white);
+    this->yAxis->setTickLabelColor(Qt::white);
+    this->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    this->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    this->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    this->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    this->xAxis->grid()->setSubGridVisible(true);
+    this->yAxis->grid()->setSubGridVisible(true);
+    this->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+    this->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+    this->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    this->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    this->xAxis->setLabelColor(QColor(200, 200, 200));
+    this->yAxis->setLabelColor(QColor(200, 200, 200));
+    QLinearGradient plotGradient;
+    plotGradient.setStart(0, 0);
+    plotGradient.setFinalStop(0, this->geometry().height());
+    plotGradient.setColorAt(0, QColor(80, 80, 80));
+    plotGradient.setColorAt(1, QColor(50, 50, 50));
+    QLinearGradient axisRectGradient;
+    axisRectGradient.setStart(0, 0);
+    axisRectGradient.setFinalStop(0, this->geometry().height());
+    axisRectGradient.setColorAt(0, QColor(80, 80, 80));
+    axisRectGradient.setColorAt(1, QColor(30, 30, 30));
+    this->axisRect()->setBackground(axisRectGradient);
+    this->setBackground(plotGradient);
+
+
+
+
 }
 
 void postmarkChart::update()
