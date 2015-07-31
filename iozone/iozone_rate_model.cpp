@@ -1,4 +1,4 @@
-#include "iozone_rate_model.h"
+#include "iozone/iozone_rate_model.h"
 
 iozoneRateModel::iozoneRateModel(QObject *parent) :
     QObject(parent)

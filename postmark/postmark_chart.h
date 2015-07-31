@@ -1,9 +1,8 @@
 #ifndef POSTMARK_CHART
 #define POSTMARK_CHART
 
-#include "qcustomplot.h"
-
-#include "postmark_thread.h"
+#include "qcustomplot/qcustomplot.h"
+#include "postmark/postmark_thread.h"
 
 class postmarkChart : public QCustomPlot
 {

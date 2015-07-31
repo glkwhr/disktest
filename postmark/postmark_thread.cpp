@@ -1,4 +1,4 @@
-#include "postmark_thread.h"
+#include "postmark/postmark_thread.h"
 
 extern "C" {
     int postmark_main(int nowfs, int argc, char *argv[32]);

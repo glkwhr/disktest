@@ -8,7 +8,7 @@
 #include <QSystemSemaphore>
 //#include <QSharedMemory>
 
-#include "iozone_paramwidget.h"
+#include "iozone/iozone_paramwidget.h"
 
 #include <sys/types.h>
 #include <sys/ipc.h>

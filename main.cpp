@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#include "iozone_event.h"
-#include "postmark_event.h"
+#include "iozone/iozone_event.h"
+#include "postmark/postmark_event.h"
 
 #include <QCoreApplication>
 

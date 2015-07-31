@@ -1,8 +1,8 @@
 #ifndef IOZONE_CHART_H
 #define IOZONE_CHART_H
 
-#include "qcustomplot.h"
-#include "iozone_rate_model.h"
+#include "qcustomplot/qcustomplot.h"
+#include "iozone/iozone_rate_model.h"
 
 #define MINIMUM_DATA_RANGE 500000
 

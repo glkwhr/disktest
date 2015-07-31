@@ -1,5 +1,5 @@
-#include "postmark_chart.h"
-#include "postmark_thread.h"
+#include "postmark/postmark_chart.h"
+#include "postmark/postmark_thread.h"
 
 postmarkChart::postmarkChart(int k, QTableWidget *tbl, QWidget *parent):QCustomPlot(parent), table(tbl)
 {

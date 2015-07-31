@@ -10,10 +10,10 @@
 #include <QProgressBar>
 #include <QComboBox>
 
-#include "iozone_paramwidget.h"
-#include "iozone_thread.h"
-#include "iozone_event.h"
-#include "iozone_chart.h"
+#include "iozone/iozone_paramwidget.h"
+#include "iozone/iozone_thread.h"
+#include "iozone/iozone_event.h"
+#include "iozone/iozone_chart.h"
 
 #ifndef FILESYS_TYPE
 #define FILESYS_TYPE

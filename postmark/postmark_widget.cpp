@@ -1,10 +1,9 @@
-#include "postmark_widget.h"
-#include "postmark_paramwidget.h"
-#include "paintedwidget.h"
+#include "postmark/postmark_widget.h"
+#include "postmark/postmark_paramwidget.h"
 
-#include "postmark_thread.h"
+#include "postmark/postmark_thread.h"
 
-#include "postmark_event.h"
+#include "postmark/postmark_event.h"
 
 #include <QFileDialog>
 #include <QTextStream>
