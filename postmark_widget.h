@@ -26,6 +26,7 @@ class postmarkWidget : public QWidget
 public slots:
     void buttonclicked();
     void parambuttonclicked();
+    void fsbuttonclicked();
 
 public:
     void myEventHandle(QEvent * e);
@@ -55,6 +56,9 @@ private:
 
     QLabel *pgslabel;
     QProgressBar * pgsbar;
+
+    QPushButton *fsbutton;
+    QWidget * selectfswidget;
 };
 
 #endif // POSTMARK_WIDGET

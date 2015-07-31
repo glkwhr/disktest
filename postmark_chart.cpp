@@ -50,17 +50,58 @@ postmarkChart::postmarkChart(int k, QTableWidget *tbl, QWidget *parent):QCustomP
     this->legend->setVisible(true);
     this->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop | Qt::AlignRight);
     this->legend->setBrush(QColor(255, 255, 255, 200));
+
+
+    this->xAxis->setBasePen(QPen(Qt::white, 1));
+    this->yAxis->setBasePen(QPen(Qt::white, 1));
+    this->xAxis->setTickPen(QPen(Qt::white, 1));
+    this->yAxis->setTickPen(QPen(Qt::white, 1));
+    this->xAxis->setSubTickPen(QPen(Qt::white, 1));
+    this->yAxis->setSubTickPen(QPen(Qt::white, 1));
+    this->xAxis->setTickLabelColor(Qt::white);
+    this->yAxis->setTickLabelColor(Qt::white);
+    this->xAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    this->yAxis->grid()->setPen(QPen(QColor(140, 140, 140), 1, Qt::DotLine));
+    this->xAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    this->yAxis->grid()->setSubGridPen(QPen(QColor(80, 80, 80), 1, Qt::DotLine));
+    this->xAxis->grid()->setSubGridVisible(true);
+    this->yAxis->grid()->setSubGridVisible(true);
+    this->xAxis->grid()->setZeroLinePen(Qt::NoPen);
+    this->yAxis->grid()->setZeroLinePen(Qt::NoPen);
+    this->xAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    this->yAxis->setUpperEnding(QCPLineEnding::esSpikeArrow);
+    this->xAxis->setLabelColor(QColor(200, 200, 200));
+    this->yAxis->setLabelColor(QColor(200, 200, 200));
+    QLinearGradient plotGradient;
+    plotGradient.setStart(0, 0);
+    //plotGradient.setFinalStop(0, this->geometry().height());
+    plotGradient.setFinalStop(0, 480);
+    plotGradient.setColorAt(0, QColor(80, 80, 80));
+    plotGradient.setColorAt(1, QColor(50, 50, 50));
+    QLinearGradient axisRectGradient;
+    axisRectGradient.setStart(0, 0);
+    //axisRectGradient.setFinalStop(0, this->geometry().height());
+    int ttt = this->geometry().height();
+    axisRectGradient.setFinalStop(0, 480);
+    axisRectGradient.setColorAt(0, QColor(80, 80, 80));
+    axisRectGradient.setColorAt(1, QColor(30, 30, 30));
+    this->axisRect()->setBackground(axisRectGradient);
+    this->setBackground(plotGradient);
+
+
+
+
 }
 
 void postmarkChart::update()
 {
 
 
-    int color[10][4] = {{0, 0, 255, 50},
-                        {180, 0, 120, 50},
-                        {255, 154, 0, 50},
-                        {0, 255, 0, 50},
-                        {255, 0, 0, 50}
+    int color[10][4] = {{150, 222, 0, 140},
+                        {222, 150, 0, 140},
+                        {0, 150, 222, 140},
+                        {250, 111, 111, 140},
+                        {255, 0, 0, 90}
                        };
 
     QVector<double> datax;
@@ -118,9 +159,13 @@ void postmarkChart::update()
             bars[i] = new QCPBars(this->xAxis, this->yAxis);
             this->addPlottable(bars[i]);
         }
+
+        QPen pen;
+        pen.setColor(QColor(color[i][0], color[i][1], color[i][2]));
+        pen.setWidthF(1.5);
         bars[i]->setData(datax, datay);
         bars[i]->setBrush(QColor(color[i][0], color[i][1], color[i][2], color[i][3]));
-        bars[i]->setPen(QColor(color[i][0], color[i][1], color[i][2]));
+        bars[i]->setPen(pen);
         bars[i]->setWidth(0.15);
         bars[i]->setBarsGroup(bargroup);
 

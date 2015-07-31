@@ -105,13 +105,18 @@ void postmarkThread::run()
     }
 
 
-    QString qsRamfsDevDir;/* 设备路径 */
-    QString qsRamfsMntDir;/* 挂载路径 */
-    QString qsRamfsFsType;/* 文件系统类型 */
+    QString devDir;/* 设备路径 */
+    QString mntDir;/* 挂载路径 */
+    QString fsType;/* 文件系统类型 */
 
 
-    QString lineMount = "mount";
+    QString command = "mount";
     QStringList args;
+
+    bool useShellToMount = qsetConfig->value("shell").toBool();
+    QString shellDir = qsetConfig->value("shelldir").toString();
+
+
     //开始postmark的测试
 
     extern char global_fschararray[FS_NUM][16];
@@ -122,44 +127,71 @@ void postmarkThread::run()
         {
             pgs->setVisible(true);
             qsetConfig->beginGroup(global_fschararray[i]);
-                qsRamfsDevDir = qsetConfig->value("dev").toString();
-                qsRamfsMntDir = qsetConfig->value("mnt").toString();
-                qsRamfsFsType = qsetConfig->value("fstype").toString();
+                devDir = qsetConfig->value("dev").toString();
+                mntDir = qsetConfig->value("mnt").toString();
+                fsType = qsetConfig->value("fstype").toString();
             qsetConfig->endGroup();
 
-            //mkfs
-            label->setText("Formatting Device ...");
-            lineMount = "mkfs";
-            args.clear();
-            args.append("-t");
-            args.append(qsRamfsFsType);
-            args.append(qsRamfsDevDir);
-            QProcess::execute(lineMount, args);
+            if (useShellToMount)
+            {
+                /* 执行shell 以"sh ./shell fstype mount"格式 */
+                command = "sh";
+                args.clear();
+                args << shellDir << fsType << "mount";
+                QProcess::execute( command, args );
+            }
+            else
+            {
+                //mkfs
+                label->setText("Formatting Device ...");
+                command = "mkfs";
+                args.clear();
+                args.append("-t");
+                args.append(fsType);
+                args.append(devDir);
+                QProcess::execute(command, args);
 
-            //挂载
-            sprintf(buff, "Mounting %s ...", global_fschararray[i]);
-            label->setText(buff);
-            lineMount = "mount";
-            args.clear();
-            args.append("-t");
-            args.append(qsRamfsFsType);
-            args.append(qsRamfsDevDir);
-            args.append(qsRamfsMntDir);
-            QProcess::execute(lineMount, args);
-            sprintf(argv[0], "set location %s", qsRamfsMntDir.toStdString().c_str() );
-            sprintf(buff, "Testing %s ...", global_fschararray[i]);
-            label->setText(buff);
+                //挂载
+                sprintf(buff, "Mounting %s ...", global_fschararray[i]);
+                label->setText(buff);
+                command = "mount";
+                args.clear();
+                args.append("-t");
+                args.append(fsType);
+                args.append(devDir);
+                args.append(mntDir);
+                QProcess::execute(command, args);
+                sprintf(argv[0], "set location %s", mntDir.toStdString().c_str() );
+                sprintf(buff, "Testing %s ...", global_fschararray[i]);
+                label->setText(buff);
+            }
+
+            sleep(1);/* 给时间完成以上工作 */
+
 
             //Postmark
             postmark_main(i, argc, argv);
 
+
             //umount
-            sprintf(buff, "Umounting %s ...", global_fschararray[i]);
-            label->setText(buff);
-            lineMount = "umount";
-            args.clear();
-            args.append(qsRamfsMntDir);
-            QProcess::execute(lineMount, args);
+            if (useShellToMount)
+            {
+                /* 执行shell 以"sh ./shell fstype umount"格式 */
+                command = "sh";
+                args.clear();
+                args << shellDir << fsType << "umount";
+                QProcess::execute( command, args );
+            }
+            else
+            {
+                sprintf(buff, "Umounting %s ...", global_fschararray[i]);
+                label->setText(buff);
+                command = "umount";
+                args.clear();
+                args.append(mntDir);
+                QProcess::execute(command, args);
+            }
+
         }
     }
 

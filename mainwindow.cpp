@@ -21,21 +21,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    openAction = new QAction(QIcon(":/images/file-open.png"), tr("&Open"), this);
-    openAction->setShortcuts(QKeySequence::Open);
-    openAction->setStatusTip(tr("Open an existing file"));
-
-    saveAction = new QAction(QIcon(":/images/file-save.png"), tr("&Save"), this);
-    saveAction->setShortcut(QKeySequence::Save);
-    saveAction->setStatusTip(tr("Save a new file"));
-
-    QMenu *file = menuBar()->addMenu(tr("&File"));
-    file->addAction(openAction);
-    file->addAction(saveAction);
-
-    QToolBar *toolBar = addToolBar(tr("&File"));
-    toolBar->addAction(openAction);
-    toolBar->addAction(saveAction);
 
     QTabWidget * tabwidget = new QTabWidget(this);
     setCentralWidget(tabwidget);
@@ -43,44 +28,19 @@ MainWindow::MainWindow(QWidget *parent)
     widget1 = new iozoneWidget(this);
     widget2 = new postmarkWidget(this);
 
-    QIcon icon1(":/icons/iozone_icon.png");
+    QIcon icon1(":/icons/iozone_tab.png");
     tabwidget->addTab(widget1, icon1, "Iozone");
 
     QIcon icon2(":/icons/postmark.png");
     tabwidget->addTab(widget2, icon2, "Postmark");
 
-
-
-
-    connect(openAction, SIGNAL(triggered()), this, SLOT(openfile()));
-    connect(saveAction, SIGNAL(triggered()), this, SLOT(savefile()));
+    this->resize(500, 400);
 }
 
 MainWindow::~MainWindow()
 {
 
 }
-
-
-
-void MainWindow::openfile()
-{
-    QMessageBox::information(NULL, "open", "open a file");
-
-
-}
-void MainWindow::savefile()
-{
-    QMessageBox::information(NULL, "save", "save a file");
-}
-
-
-
-
-
-
-
-
 
 
 bool MainWindow::event(QEvent *e)

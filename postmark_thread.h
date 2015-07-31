@@ -7,7 +7,7 @@
 #include <QLabel>
 #include <QProgressBar>
 
-#define FS_NUM 3
+#define FS_NUM 4
 
 class postmarkThread : public QThread
 {

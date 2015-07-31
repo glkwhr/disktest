@@ -43,5 +43,15 @@ int main(int argc, char *argv[])
     g_w = new MainWindow();
     g_w->show();
 
+    QFile qssFile(":/qss/skin.qss");
+    QString qss;
+    qssFile.open(QFile::ReadOnly);
+    if(qssFile.isOpen())
+    {
+        qss = QLatin1String(qssFile.readAll());
+        //qApp->setStyleSheet(qss);
+        a.setStyleSheet(qss);
+        qssFile.close();
+    }
     return a.exec();
 }
