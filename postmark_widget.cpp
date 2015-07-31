@@ -32,8 +32,6 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     table->setVisible(false);
     connect(showtable, SIGNAL(toggled(bool)), table, SLOT(setVisible(bool)));
 
-
-
     chart1 = new postmarkChart(0, table, this);
 
 
@@ -58,6 +56,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     paramWidget = new postmarkParamWidget(this);
     paramWidget->setVisible(false);
 
+
     QHBoxLayout *selectfslayout = new QHBoxLayout;
     for (int i = 0; i < FS_NUM; ++i)
     {
@@ -66,6 +65,18 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
         selectfslayout->addWidget(selectfs[i]);
     }
 
+    selectfswidget = new QWidget(this);
+    selectfswidget->setLayout(selectfslayout);
+    selectfswidget->setVisible(false);
+
+    fsbutton = new QPushButton(this);
+    fsbutton->setText("Choose filesystem");
+    connect(fsbutton, SIGNAL(clicked()), this, SLOT(fsbuttonclicked()));
+
+    QHBoxLayout * buttonlayout = new QHBoxLayout();
+    buttonlayout->addWidget(parambutton);
+    buttonlayout->addWidget(fsbutton);
+    buttonlayout->addWidget(button);
 
 
     fslabel = new QLabel(this);
@@ -79,7 +90,7 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     pgslabel->setVisible(false);
 
     QGridLayout * gridlayout = new QGridLayout;
-    gridlayout->addWidget(button, 1, 1);
+    //gridlayout->addWidget(button, 0, 2);
 
     //QHBoxLayout *chartlayout = new QHBoxLayout();
     //chartlayout->addWidget(chart1);
@@ -92,10 +103,11 @@ postmarkWidget::postmarkWidget(QWidget * parent):QWidget(parent)
     gridlayout->addWidget(table, 5, 1, 1, 2);
 
 
-    gridlayout->addWidget(parambutton, 0, 1);
+    //gridlayout->addWidget(parambutton, 0, 1);
     //gridlayout->addWidget(paramWidget, 0, 0, 7, 1);
+    gridlayout->addLayout(buttonlayout, 0, 1, 1, 1);
 
-    gridlayout->addLayout(selectfslayout, 0, 2);
+    gridlayout->addWidget(selectfswidget, 1, 1);
 
 
     gridlayout->addWidget(fslabel, 6, 1);
@@ -154,6 +166,10 @@ void postmarkWidget::parambuttonclicked()
         parambutton->setText(">>> Details setting");
     else
         parambutton->setText("<<< Details setting");
+}
+void postmarkWidget::fsbuttonclicked()
+{
+    selectfswidget->setVisible(!selectfswidget->isVisible());
 }
 
 
