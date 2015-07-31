@@ -1,5 +1,4 @@
-#include "iozone_thread.h"
-#include "paintedwidget.h"
+#include "iozone/iozone_thread.h"
 
 #include <QDebug>
 

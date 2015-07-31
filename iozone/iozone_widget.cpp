@@ -1,4 +1,4 @@
-#include "iozone_widget.h"
+#include "iozone/iozone_widget.h"
 
 #include <QDebug>
 

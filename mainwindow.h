@@ -8,8 +8,8 @@
 
 #include <QEvent>
 
-#include "iozone_widget.h"
-#include "postmark_widget.h"
+#include "iozone/iozone_widget.h"
+#include "postmark/postmark_widget.h"
 
 
 

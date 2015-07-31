@@ -8,14 +8,11 @@
 
 
 
-#include "iozone_event.h"
+#include "iozone/iozone_event.h"
+#include "iozone/iozone_widget.h"
 
-
-#include "iozone_widget.h"
-
-
-#include "postmark_widget.h"
-#include "postmark_event.h"
+#include "postmark/postmark_widget.h"
+#include "postmark/postmark_event.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -28,13 +25,14 @@ MainWindow::MainWindow(QWidget *parent)
     widget1 = new iozoneWidget(this);
     widget2 = new postmarkWidget(this);
 
-    QIcon icon1(":/icons/iozone_tab.png");
-    tabwidget->addTab(widget1, icon1, "Iozone");
+    //QIcon icon1(":/icons/iozone_tab.png");
+    tabwidget->addTab(widget1, "Iozone");
 
-    QIcon icon2(":/icons/postmark.png");
-    tabwidget->addTab(widget2, icon2, "Postmark");
+    //QIcon icon2(":/icons/postmark.png");
+    tabwidget->addTab(widget2, "Postmark");
 
-    this->resize(500, 400);
+    this->resize(860, 680);
+    this->setWindowTitle("DiskTest");
 }
 
 MainWindow::~MainWindow()

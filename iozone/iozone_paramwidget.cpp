@@ -1,4 +1,4 @@
-#include "iozone_paramwidget.h"
+#include "iozone/iozone_paramwidget.h"
 #include <QDebug>
 
 iozoneParamWidget::iozoneParamWidget(QWidget *parent):QWidget(parent)

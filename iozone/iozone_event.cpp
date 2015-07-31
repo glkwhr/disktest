@@ -1,4 +1,4 @@
-#include "iozone_event.h"
+#include "iozone/iozone_event.h"
 
 ioZoneEvent::ioZoneEvent():QEvent(ioZoneEvent::ioZoneEventType)
 {

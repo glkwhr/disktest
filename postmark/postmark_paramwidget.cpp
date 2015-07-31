@@ -1,4 +1,4 @@
-#include "postmark_paramwidget.h"
+#include "postmark/postmark_paramwidget.h"
 
 
 #include <QGridLayout>

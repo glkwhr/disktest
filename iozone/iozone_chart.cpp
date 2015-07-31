@@ -1,4 +1,4 @@
-#include "iozone_chart.h"
+#include "iozone/iozone_chart.h"
 
 iozoneChart::iozoneChart(QFrame *frame, QWidget *parent) :
     QCustomPlot(parent)

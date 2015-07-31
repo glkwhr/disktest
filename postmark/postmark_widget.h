@@ -12,13 +12,11 @@
 
 #include <QTableWidget>
 
-#include "paintedwidget.h"
+#include "postmark/postmark_thread.h"
 
-#include "postmark_thread.h"
+#include "postmark/postmark_paramwidget.h"
 
-#include "postmark_paramwidget.h"
-
-#include "postmark_chart.h"
+#include "postmark/postmark_chart.h"
 
 class postmarkWidget : public QWidget
 {
