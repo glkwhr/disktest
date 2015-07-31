@@ -97,11 +97,11 @@ void postmarkChart::update()
 {
 
 
-    int color[10][4] = {{0, 0, 255, 50},
-                        {180, 0, 120, 50},
-                        {255, 154, 0, 50},
-                        {0, 255, 0, 50},
-                        {255, 0, 0, 50}
+    int color[10][4] = {{150, 222, 0, 140},
+                        {222, 150, 0, 140},
+                        {0, 150, 222, 140},
+                        {250, 111, 111, 140},
+                        {255, 0, 0, 90}
                        };
 
     QVector<double> datax;
@@ -159,9 +159,13 @@ void postmarkChart::update()
             bars[i] = new QCPBars(this->xAxis, this->yAxis);
             this->addPlottable(bars[i]);
         }
+
+        QPen pen;
+        pen.setColor(QColor(color[i][0], color[i][1], color[i][2]));
+        pen.setWidthF(1.5);
         bars[i]->setData(datax, datay);
         bars[i]->setBrush(QColor(color[i][0], color[i][1], color[i][2], color[i][3]));
-        bars[i]->setPen(QColor(color[i][0], color[i][1], color[i][2]));
+        bars[i]->setPen(pen);
         bars[i]->setWidth(0.15);
         bars[i]->setBarsGroup(bargroup);
 
