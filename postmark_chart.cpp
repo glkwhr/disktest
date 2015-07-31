@@ -74,12 +74,15 @@ postmarkChart::postmarkChart(int k, QTableWidget *tbl, QWidget *parent):QCustomP
     this->yAxis->setLabelColor(QColor(200, 200, 200));
     QLinearGradient plotGradient;
     plotGradient.setStart(0, 0);
-    plotGradient.setFinalStop(0, this->geometry().height());
+    //plotGradient.setFinalStop(0, this->geometry().height());
+    plotGradient.setFinalStop(0, 480);
     plotGradient.setColorAt(0, QColor(80, 80, 80));
     plotGradient.setColorAt(1, QColor(50, 50, 50));
     QLinearGradient axisRectGradient;
     axisRectGradient.setStart(0, 0);
-    axisRectGradient.setFinalStop(0, this->geometry().height());
+    //axisRectGradient.setFinalStop(0, this->geometry().height());
+    int ttt = this->geometry().height();
+    axisRectGradient.setFinalStop(0, 480);
     axisRectGradient.setColorAt(0, QColor(80, 80, 80));
     axisRectGradient.setColorAt(1, QColor(30, 30, 30));
     this->axisRect()->setBackground(axisRectGradient);
